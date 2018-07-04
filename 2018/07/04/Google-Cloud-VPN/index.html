@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        Tags｜Moonshot&#39;s Planet
+        科学上网：Google Cloud 安装SSR与BBR加速｜Moonshot&#39;s Planet
         
     </title>
 
-    <link rel="canonical" href="http://moonshoter.github.io/Tags/">
+    <link rel="canonical" href="http://moonshoter.github.io/2018/07/04/Google-Cloud-VPN/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -43,7 +43,7 @@
 <!-- hack iOS CSS :active style -->
 <body ontouchstart="" class="animated fadeIn">
 <!-- Navigation -->
-<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "false" data-istags="false
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
 " data-ishome = "false" >
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -123,92 +123,193 @@
 </script>
 
 <!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg">
+
+
 <style>
-    .intro-header .site-heading {
-        margin: 50px;
-    }
     
     header.intro-header {
-        background-image: url('http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg')
+        background-image: url('http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg?imageView2/1/w/1400/h/400/interlace/1/q/90')
     }
+
     
 </style>
 
-<!-- Page Header -->
 <header class="intro-header">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
-                <div class="site-heading text-center">
-                    <h1>Tags</h1>
-                    <span class="subheading">小小星球</span>
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>科学上网：Google Cloud 安装SSR与BBR加速</h1>
+                    
+                    <h2 class="subheading">再远也要来到你身边</h2>
+                    
+                    <span class="meta">
+                         作者 Moonshot
+                        <span>
+                          日期 2018-07-04
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#VPN"
+                           title="VPN">VPN</a>
+                        
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            科学上网：Google Cloud 安装SSR与BBR加速
+        </span>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <!-- 标签云 -->
-            <div id='tag_cloud' class="tags">
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <blockquote>
+<p>当你发现你敲的代码能赚钱后、为什么回家还要免费敲代码呢？</p>
+</blockquote>
+<p>为了赚更多的钱养你呀 （因为代码真的很有趣</p>
+<p>在宿舍没有科学上网的环境发现开发、学习各种艰难。又鉴于国内环境，然后谷歌云长期用试用一年和300美金的活动。决定买个服务器搭个SSR。没啥难度，主要记录下。</p>
+<h3 id="基础准备"><a href="#基础准备" class="headerlink" title="基础准备"></a>基础准备</h3><ul>
+<li>可以访问<a href="https://cloud.google.com/" target="_blank" rel="noopener">谷歌云官网</a>的网络环境  （不科学上网就访问不了，可先其他地方借用/购买/试用SSR</li>
+<li>申请一张全币信用卡用于申请免费试用 （国内几家全币信用卡基本免年费）</li>
+</ul>
+<h3 id="创建和配置Google云实例"><a href="#创建和配置Google云实例" class="headerlink" title="创建和配置Google云实例"></a>创建和配置Google云实例</h3><h4 id="创建实例"><a href="#创建实例" class="headerlink" title="创建实例"></a>创建实例</h4><ol>
+<li>在<a href="https://console.cloud.google.com/compute/instances" target="_blank" rel="noopener">计算引擎-VM实例</a>中点击创建</li>
+<li>地区选择:根据需要 一般选择台湾</li>
+<li>机器类型：小型 / 微型  (我选择微型 费用较低，相对可以用更多免费流量 不过一般用不完，好像后面也可以增加配额等操作</li>
+<li>启动磁盘：根据自己熟悉的选， linux走命令行大部分也没差</li>
+<li>防火墙：允许HTTP流量，允许HTTPS流量</li>
+</ol>
+<h4 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h4><ol>
+<li><p>防火墙配置</p>
+<p>新建一个防火墙规则 <a href="https://console.cloud.google.com/networking/firewalls/add" target="_blank" rel="noopener">VPS-防火墙规则</a></p>
+<p>进行以下配置：流量方向<code>入站</code>、来源ip地址<code>0.0.0.0/0</code>、协议和端口<code>全部允许</code></p>
+</li>
+<li><p>外部IP设置成静态IP</p>
+<p>在<a href="https://console.cloud.google.com/networking/addresses/list" target="_blank" rel="noopener">VPS-外部IP地址</a> （点击直达）中在相应的实例 类型中临时改为静态即可</p>
+<p>这个主要是为了避免服务器重启IP变化</p>
+</li>
+</ol>
+<p>​</p>
+<h3 id="服务器部署SSR-BBR"><a href="#服务器部署SSR-BBR" class="headerlink" title="服务器部署SSR+BBR"></a>服务器部署SSR+BBR</h3><ol>
+<li>进入实例控制台 – SSH – 在浏览器窗口中打开  (浏览器要允许弹出窗口)</li>
+<li>获取root权限<br> <code>sudo su</code></li>
+<li>安装ss.执行以下命令 然后根据提示进行配置 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget --no-check-certificate https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocksR.sh</span><br><span class="line">chmod +x shadowsocksR.sh</span><br><span class="line">./shadowsocksR.sh 2&gt;&amp;1 | tee shadowsocksR.log</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>到这步已经可以使用SS科学上网.后续步骤安装BBR可以进行一定加速</p>
+<ol start="4">
+<li><p>安装BBR加速</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh &amp;&amp; chmod +x bbr.sh &amp;&amp; ./bbr.sh</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重启VM</p>
+</li>
+<li>配置BBR <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sysctl net.ipv4.tcp_available_congestion_control</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+                <hr>
                 
-                <a href="#VPN" title="VPN" rel="1">VPN</a>
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/06/21/new-blog-new-life/" data-toggle="tooltip" data-placement="top"
+                           title="Moonshot's Planet 启航之旅">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
                 
-                <a href="#Life" title="Life" rel="1">Life</a>
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+
+                <!--加入新的评论系统-->
                 
             </div>
 
-            <!-- 标签列表 -->
-            
-            <div class="one-tag-list">
-                <span class="fa fa-tag listing-seperator" id="VPN">
-                    <span class="tag-text">VPN</span>
-                </span>
-                
-                <div class="post-preview">
-                    <a href="/2018/07/04/Google-Cloud-VPN/">
-                        <h2 class="post-title">
-                            科学上网：Google Cloud 安装SSR与BBR加速
-                        </h2>
-                        
-                        <h3 class="post-subtitle">
-                            再远也要来到你身边
-                        </h3>
-                        
-                    </a>
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#基础准备"><span class="toc-text">基础准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建和配置Google云实例"><span class="toc-text">创建和配置Google云实例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#创建实例"><span class="toc-text">创建实例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#配置"><span class="toc-text">配置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务器部署SSR-BBR"><span class="toc-text">服务器部署SSR+BBR</span></a></li></ol>
                 </div>
-                <hr>
-                
             </div>
-            
-            <div class="one-tag-list">
-                <span class="fa fa-tag listing-seperator" id="Life">
-                    <span class="tag-text">Life</span>
-                </span>
-                
-                <div class="post-preview">
-                    <a href="/2018/06/21/new-blog-new-life/">
-                        <h2 class="post-title">
-                            Moonshot's Planet 启航之旅
-                        </h2>
-                        
-                        <h3 class="post-subtitle">
-                            从头开始 重新启航
-                        </h3>
-                        
-                    </a>
-                </div>
-                <hr>
-                
-            </div>
-            
-
         </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#VPN"
+                           title="VPN">VPN</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
     </div>
-</div>
+</article>
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "Moonshot";
+    var disqus_identifier = "http://moonshoter.github.io/2018/07/04/Google-Cloud-VPN/";
+    var disqus_url = "http://moonshoter.github.io/2018/07/04/Google-Cloud-VPN/";
+
+    (function () {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
 
 <!-- Footer -->
 <!-- Footer -->
