@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        Moonshot&#39;s Planet
+        Maven 开放库 隐藏源码：发布修改source.jar｜Moonshot&#39;s Planet
         
     </title>
 
-    <link rel="canonical" href="http://moonshoter.github.io/tags/Life/">
+    <link rel="canonical" href="http://moonshoter.github.io/2018/08/07/maven-hide-souces/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -43,7 +43,7 @@
 <!-- hack iOS CSS :active style -->
 <body ontouchstart="" class="animated fadeIn">
 <!-- Navigation -->
-<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "false" data-istags="true
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
 " data-ishome = "false" >
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -123,193 +123,176 @@
 </script>
 
 <!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg">
+
+
 <style>
-    .intro-header .site-heading {
-        margin: 50px;
-    }
     
     header.intro-header {
-        background-image: url('http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg')
+        background-image: url('http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg?imageView2/1/w/1400/h/400/interlace/1/q/90')
     }
+
     
 </style>
 
-<!-- Page Header -->
 <header class="intro-header">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
-                <div class="site-heading text-center">
-                    <h1>archives</h1>
-                    <span class="subheading">可以根据归档日期检索所有文件</span>
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>Maven 开放库 隐藏源码：发布修改source.jar</h1>
+                    
+                    <h2 class="subheading">偷偷藏住爱你的心</h2>
+                    
+                    <span class="meta">
+                         作者 Moonshot
+                        <span>
+                          日期 2018-08-07
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#Android"
+                           title="Android">Android</a>
+                        
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="post-title-haojen">
+        <span>
+            Maven 开放库 隐藏源码：发布修改source.jar
+        </span>
+    </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <!-- archive list -->
-            
-				
-				
-				
-					
-					
-					<div class="archive archive-year" data-date="2018">
-						<h2 class="archive-title">
-						<span class="fa fa-archive">
-							<a href="/archives/2018">2018</a>
-						</span>
-						</h2>
-				
-				
-					
-					
-					<div class="archive archive-month" data-date="201808">
-						<h3 class="archive-title">
-							<a href="/archives/2018/08">08</a>
-						</h3>
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/08/07/maven-hide-souces/">
-                        <h4 class="post-title">
-                            Maven 开放库 隐藏源码：发布修改source.jar
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            偷偷藏住爱你的心
-                        </h4>
-                        
-                    </a>
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>开发过程中可能会有一些对外的依赖库或者SDK。一般会通过代码混淆核心实现，来提高破解成本。如果能隐藏对外的代码那就更好了。</p>
+<h3 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h3><p>Maven总的来说是一个项目管理工具。平时开发中，我们可以简单理解成依赖库的仓库中心。我们的可以在上面取到我们的想要的第三方库。<br>一般而言，一个依赖库上传到maven上会包含这几个文件：</p>
+<ul>
+<li>xx-source.jar 依赖库源码 java文件的压缩包</li>
+<li>xx.jar/xx.aar  实际编译的依赖代码  class文件的压缩包</li>
+<li>xxjacdoc.jar   接口文档</li>
+<li>xx.pom    依赖库的一些标准信息<br>通过修改上传source.jar文件,当其他依赖该库，则会关联到修改后的源码。</li>
+</ul>
+<h3 id="寻找修改入口"><a href="#寻找修改入口" class="headerlink" title="寻找修改入口"></a>寻找修改入口</h3><p>一般Android项目我们会上传到jcenter或者其他Maven服务上.（第一次会相当折腾）   <a href="http://blog.bugtags.com/2016/01/27/embrace-android-studio-maven-deploy/" target="_blank" rel="noopener">上传代码到Maven教程</a><br>其中生成source.jar的gradle task一般是这样的<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">task sourcesJar(type: Jar) &#123;</span><br><span class="line">    group &quot;artifacts&quot;</span><br><span class="line">    from android.sourceSets.main.java.srcDirs //源码路径</span><br><span class="line">    classifier = &apos;sources&apos; //文件名后缀</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>实际上一个继承org.gradle.jvm.tasks.Jar的task.实际上就是把制定的目录压缩成jar文件。这就是我们修改的入口。</p>
+<p>然后这个task支持指定一个FilterReader。也就是在打包过程中的每一个文件流都会经过我们指定的IO流。只要把原本的文件流 剔除修改成我们想要的文件流，则打包出来的就会是我们隐藏后的源码。</p>
+<p>整体思路如下。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">static class CodeFilterReader extends FilterReader &#123;</span><br><span class="line">       CodeFilterReader(Reader reader) &#123;</span><br><span class="line">           super(reader)</span><br><span class="line">           //读取Reader 修改源码</span><br><span class="line">           String codeAfterHide = xxx //修改后的源码</span><br><span class="line">           //替换成 修改后的IO流</span><br><span class="line">           this.in = new StringReader(codeAfterHide)</span><br><span class="line">           reader.close()</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>接下来就是如何解析修改源码了。</p>
+<p>（然后这里就要记录下自己犯的错误）</p>
+<p>这边笔者想当然（脑子一抽）的直接使用ASM去处理，然后一直失败。</p>
+<p>问题出现在ASM是<strong>字节码</strong>操作框架，可以理解成是操作class文件的。然而我们这边处理的是源码文本java文件。</p>
+<p>后续直接采用com.github.javaparser框架进行处理。具体源码后续开放</p>
+<p>修改前：</p>
+<p><img src="./sources.jar.jpg" alt="sources.jar"></p>
+<p>修改后：<br><img src="./sources-hide-jar.jpg" alt="sources-hide-jar"></p>
+<h3 id="藏不住的源码"><a href="#藏不住的源码" class="headerlink" title="藏不住的源码"></a>藏不住的源码</h3><blockquote>
+<p>俗话说 人有两样东西是无法隐瞒的 ：<strong>咳嗽</strong> 和 <strong>爱</strong>   biu biu biu～</p>
+</blockquote>
+<p>实际上对外依赖库的源码也是。实际字节码文件已上传到maven上，可以直接下来相应的jar包或者aar文件 。然后通过反编译字节码文件获取到java源码。<br>所以我们只是做了一个微小的工作，提供下门槛。</p>
+
+                <hr>
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/07/27/first-cook-log/" data-toggle="tooltip" data-placement="top"
+                           title="虾生的意义：成为茄汁大虾">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
                 </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-					
-					</div><!--month-->
-					
-					
-					<div class="archive archive-month" data-date="201807">
-						<h3 class="archive-title">
-							<a href="/archives/2018/07">07</a>
-						</h3>
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/07/27/first-cook-log/">
-                        <h4 class="post-title">
-                            虾生的意义：成为茄汁大虾
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            我想做饭给你吃 我想和你骑单车 我想和你看棒球
-                        </h4>
-                        
-                    </a>
+                <!-- disqus 评论框 end -->
+                
+
+
+                <!--加入新的评论系统-->
+                
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Maven"><span class="toc-text">Maven</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#寻找修改入口"><span class="toc-text">寻找修改入口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#藏不住的源码"><span class="toc-text">藏不住的源码</span></a></li></ol>
                 </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/07/15/book-review-keep-promise/">
-                        <h4 class="post-title">
-                            假装书评：何为信守诺言
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            小读《一头想要被吃掉的猪》
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/07/10/colot-font-emoji-compat/">
-                        <h4 class="post-title">
-                            Emoji全平台适配方案：使用彩色/图片字体
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            Android iOS 一个都不能少
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/07/04/Google-Cloud-VPN/">
-                        <h4 class="post-title">
-                            科学上网：Google Cloud 安装SSR与BBR加速
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            再远也要来到你身边
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-					
-					</div><!--month-->
-					
-					
-					<div class="archive archive-month" data-date="201806">
-						<h3 class="archive-title">
-							<a href="/archives/2018/06">06</a>
-						</h3>
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/06/21/new-blog-new-life/">
-                        <h4 class="post-title">
-                            Moonshot's Planet 启航之旅
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            从头开始 重新启航
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
+            </div>
         </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#Android"
+                           title="Android">Android</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
     </div>
+</article>
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "Moonshot";
+    var disqus_identifier = "http://moonshoter.github.io/2018/08/07/maven-hide-souces/";
+    var disqus_url = "http://moonshoter.github.io/2018/08/07/maven-hide-souces/";
+
+    (function () {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
 
 <!-- Footer -->
 <!-- Footer -->
