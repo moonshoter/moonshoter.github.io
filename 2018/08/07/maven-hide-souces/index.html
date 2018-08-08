@@ -186,19 +186,25 @@
 <li>xxjacdoc.jar   接口文档</li>
 <li>xx.pom    依赖库的一些标准信息<br>通过修改上传source.jar文件,当其他依赖该库，则会关联到修改后的源码。</li>
 </ul>
-<h3 id="寻找修改入口"><a href="#寻找修改入口" class="headerlink" title="寻找修改入口"></a>寻找修改入口</h3><p>一般Android项目我们会上传到jcenter或者其他Maven服务上.（第一次会相当折腾）   <a href="http://blog.bugtags.com/2016/01/27/embrace-android-studio-maven-deploy/" target="_blank" rel="noopener">上传代码到Maven教程</a><br>其中生成source.jar的gradle task一般是这样的<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">task sourcesJar(type: Jar) &#123;</span><br><span class="line">    group &quot;artifacts&quot;</span><br><span class="line">    from android.sourceSets.main.java.srcDirs //源码路径</span><br><span class="line">    classifier = &apos;sources&apos; //文件名后缀</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>实际上一个继承org.gradle.jvm.tasks.Jar的task.实际上就是把制定的目录压缩成jar文件。这就是我们修改的入口。</p>
-<p>然后这个task支持指定一个FilterReader。也就是在打包过程中的每一个文件流都会经过我们指定的IO流。只要把原本的文件流 剔除修改成我们想要的文件流，则打包出来的就会是我们隐藏后的源码。</p>
+<h3 id="寻找修改入口"><a href="#寻找修改入口" class="headerlink" title="寻找修改入口"></a>寻找修改入口</h3><p>一般Android项目我们会上传到jcenter或者其他Maven服务上.（第一次会相当折腾）   <a href="http://blog.bugtags.com/2016/01/27/embrace-android-studio-maven-deploy/" target="_blank" rel="noopener">上传代码到Maven教程</a><br>其中生成source.jar的gradle task一般是这样的<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">task sourcesJar(type: Jar) &#123;</span><br><span class="line">    group &quot;artifacts&quot;</span><br><span class="line">    from android.sourceSets.main.java.srcDirs //源码路径</span><br><span class="line">    classifier = &apos;sources&apos; //文件名后缀</span><br><span class="line">     filter(CodeFilterReader.class) //制定Filter 不制定则原文件写入</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>实际上一个继承org.gradle.jvm.tasks.Jar的task （实际上也是Zip任务）.实际上就是把制定的目录压缩成jar文件。这就是我们修改的入口。</p>
+<p>然后这个task支持指定一个FilterReader。也就是在打包过程中的每一个文件流都会经过我们指定的IO流。</p>
+<p>只要把原本的文件流 剔除修改成我们想要的文件流，则打包出来的就会是我们隐藏后的源码。</p>
+<p>简单讲就是 在把若干文件压缩成Jar包 Origin-Files —&gt; Files-Zip</p>
+<p>然后通过FilterReader：  Origin-Files —&gt;  FilterReadr—&gt; Changed-FIles—&gt;   Files-Zip</p>
 <p>整体思路如下。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">static class CodeFilterReader extends FilterReader &#123;</span><br><span class="line">       CodeFilterReader(Reader reader) &#123;</span><br><span class="line">           super(reader)</span><br><span class="line">           //读取Reader 修改源码</span><br><span class="line">           String codeAfterHide = xxx //修改后的源码</span><br><span class="line">           //替换成 修改后的IO流</span><br><span class="line">           this.in = new StringReader(codeAfterHide)</span><br><span class="line">           reader.close()</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">static class CodeFilterReader extends FilterReader &#123;</span><br><span class="line">       CodeFilterReader(Reader reader) &#123;</span><br><span class="line">           super(reader)</span><br><span class="line">           //读取Reader 获取源码  即从java文件获取源码</span><br><span class="line">           //利用一定手段 将源码剔除不想展示的部分</span><br><span class="line">           String codeAfterHide = xxx //修改后的源码</span><br><span class="line">           //替换成 修改后的IO流</span><br><span class="line">           this.in = new StringReader(codeAfterHide)</span><br><span class="line">           reader.close()</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
 <p>接下来就是如何解析修改源码了。</p>
 <p>（然后这里就要记录下自己犯的错误）</p>
 <p>这边笔者想当然（脑子一抽）的直接使用ASM去处理，然后一直失败。</p>
 <p>问题出现在ASM是<strong>字节码</strong>操作框架，可以理解成是操作class文件的。然而我们这边处理的是源码文本java文件。</p>
-<p>后续直接采用com.github.javaparser框架进行处理。具体源码后续开放</p>
-<p>修改前：</p>
+<p>后续直接采用<strong>com.github.javaparser</strong>框架进行处理。详见<a href="https://github.com/moonshoter/Hide-Sources-Library-Maven-Demo/blob/master/hidesourceplugin/src/main/groovy/com/moonshoter/plugin/HideSourceTask.groovy" target="_blank" rel="noopener">HideSourceTask</a></p>
+<h3 id="实际效果"><a href="#实际效果" class="headerlink" title="实际效果"></a>实际效果</h3><p>修改前：</p>
 <p><img src="./sources.jar.jpg" alt="sources.jar"></p>
 <p>修改后：<br><img src="./sources-hide-jar.jpg" alt="sources-hide-jar"></p>
+<p>在AS上查看 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">repositories &#123;</span><br><span class="line">        maven &#123;</span><br><span class="line">            url  &quot;https://dl.bintray.com/moonshot/moonshot.io&quot;</span><br><span class="line">        &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">//0.0.2 未隐藏源码 0.0.3隐藏了源码 (运行效果与直接查看依赖的jar不一致)</span><br><span class="line">implementation &apos;com.moonshoter.librarypackageaar:LibraryPackageAAR:0.0.3&apos;</span><br></pre></td></tr></table></figure>
 <h3 id="藏不住的源码"><a href="#藏不住的源码" class="headerlink" title="藏不住的源码"></a>藏不住的源码</h3><blockquote>
 <p>俗话说 人有两样东西是无法隐瞒的 ：<strong>咳嗽</strong> 和 <strong>爱</strong>   biu biu biu～</p>
 </blockquote>
@@ -234,7 +240,7 @@
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Maven"><span class="toc-text">Maven</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#寻找修改入口"><span class="toc-text">寻找修改入口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#藏不住的源码"><span class="toc-text">藏不住的源码</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Maven"><span class="toc-text">Maven</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#寻找修改入口"><span class="toc-text">寻找修改入口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实际效果"><span class="toc-text">实际效果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#藏不住的源码"><span class="toc-text">藏不住的源码</span></a></li></ol>
                 </div>
             </div>
         </div>
