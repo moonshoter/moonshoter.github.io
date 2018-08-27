@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Moonshot的日常与技术分享">
+    <meta name="keyword" content="">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="Moonshot" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        ASM实战：Hook图片加载框架 预警大图 非法URL｜Moonshot&#39;s Planet
+        
+    </title>
+
+    <link rel="canonical" href="http://moonshoter.github.io/2018/08/28/Image-Detector-Plugin/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    Moonshot
+                </span>
+                's Planet
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg?imageView2/1/w/1400/h/400/interlace/1/q/90')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>ASM实战：Hook图片加载框架 预警大图 非法URL</h1>
+                    
+                    <h2 class="subheading">想找出你所有的烦恼与不开心</h2>
+                    
+                    <span class="meta">
+                         作者 Moonshot
+                        <span>
+                          日期 2018-08-28
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#Android"
+                           title="Android">Android</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            ASM实战：Hook图片加载框架 预警大图 非法URL
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h2 id="ASM实战：Hook图片加载框架-预警大图-非法URL"><a href="#ASM实战：Hook图片加载框架-预警大图-非法URL" class="headerlink" title="ASM实战：Hook图片加载框架 预警大图 非法URL"></a>ASM实战：Hook图片加载框架 预警大图 非法URL</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>图片作为Android内存消耗的大头。开发过程需要谨慎的去使用。然后历史证明，人是不值得相信的，只有机器不会骗人。（我也不会）如何利用工具去检测加载过大（非必要的）的Bitmap？ 且使用CDN是优化静态图片资源的常用的手段，如何去预警未使用cdn的网络图片？</p>
+<h3 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h3><ul>
+<li>定位 加载的Bitmap大于View大小的情况</li>
+<li>定位 未使用的cdn地址的 情况</li>
+<li>进阶目标：定位到下载的图片大小 超过View大小 一定比例 （内存上没问题、影响速度等）</li>
+</ul>
+<h3 id="面向切面编程：-ASM-字节码操作框架"><a href="#面向切面编程：-ASM-字节码操作框架" class="headerlink" title="面向切面编程： ASM 字节码操作框架"></a>面向切面编程： ASM 字节码操作框架</h3><p>一般下面向对方编程的话就需要 找到所有每个加载图片的地方进行相应的改动，添加相应的代码。<br>然而这样成本太高。而且不太可能。<br>那么这个时候就要说下面向切面编程了。</p>
+<blockquote>
+<p>面向切面编程（AOP）是一种非侵入式扩充对象、方法和函数行为的技术。通过 AOP 可以从“外部”去增加一些行为，进而合并既有行为或修改既有行为。</p>
+</blockquote>
+<p>举个栗子：有这么一天两个<strong>大猪蹄子</strong>，准备和喜欢的妹纸<strong>们</strong>表白。怎么办呢？</p>
+<p>学习了面向对象的大猪蹄子，经过了一系列的学习。</p>
+<p><img src="./women-is-a-book.jpeg" alt="women-is-a-book"><br>懂得迎合妹纸喜欢，分别到妹纸喜欢的地方进行了表白。<br><img src="./express.jpeg" alt="express"></p>
+<p>而学习的面向切面编程的大猪蹄子， 心想：<br>那么多妹纸，我一个个去研究她们喜欢的地方、去她们喜欢的地方，那得有多麻烦，多累人了啊。<br>脑子灵机一动。</p>
+<p><img src="./hair-adult.jpeg" alt="hair-adult"><br>我只要在学校门口，等着她们一个个过来， 再一个个表白 不就可以了。</p>
+<p>所以，利用AOP的思想。我们只要找一个入口，找到我们关心的类或者方法，通过ASM去插入我们想要的代码。</p>
+<h3 id="需要Hook的核心类"><a href="#需要Hook的核心类" class="headerlink" title="需要Hook的核心类"></a>需要Hook的核心类</h3><p>首先看一段Glide加载图片的代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GlideApp.with(context)</span><br><span class="line">        .load(url)</span><br><span class="line">        .into(imageView);</span><br></pre></td></tr></table></figure>
+<p>简单，不就是花十分钟看下源码的事情吗？（然后一个纪元过去了）</p>
+<p>得出了几个重点：</p>
+<ul>
+<li>into的其实是一个ViewTarget</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public abstract class ImageViewTarget&lt;Z&gt; extends ViewTarget&lt;ImageView, Z&gt;</span><br><span class="line">    implements Transition.ViewAdapter &#123;</span><br><span class="line"></span><br><span class="line">	//...省略非必要的</span><br><span class="line"></span><br><span class="line">  private void setResourceInternal(@Nullable Z resource) &#123;</span><br><span class="line">    // Order matters here. Set the resource first to make sure that the Drawable has a valid and</span><br><span class="line">    // non-null Callback before starting it.</span><br><span class="line">    setResource(resource);</span><br><span class="line">    maybeUpdateAnimatable(resource);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">	//将最终加载的数据设置再ImageView中</span><br><span class="line">  protected abstract void setResource(@Nullable Z resource);</span><br><span class="line">  </span><br><span class="line">  //相应的Request</span><br><span class="line">  public Request getRequest() &#123;</span><br><span class="line">  	//...</span><br><span class="line">    return request;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>load的Url 最终传入Request中。 是Glide支持的一种model</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public final class SingleRequest&lt;R&gt; implements Request,</span><br><span class="line">      SizeReadyCallback,</span><br><span class="line">      ResourceCallback,</span><br><span class="line">      FactoryPools.Poolable &#123;</span><br><span class="line">    </span><br><span class="line">    @Nullable</span><br><span class="line">    private Object model;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  所以只要在类<code>ImageViewTarget#setResource</code>中添加检测代码，这样每个调用的地方就可以执行到</p>
+<h3 id="Hook准备-：ImageViewTarget中嵌入的检测代码"><a href="#Hook准备-：ImageViewTarget中嵌入的检测代码" class="headerlink" title="Hook准备 ：ImageViewTarget中嵌入的检测代码"></a>Hook准备 ：ImageViewTarget中嵌入的检测代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class GlideHelpter &#123;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 检测是否有异常数据</span><br><span class="line">     */</span><br><span class="line">    public static void detect(ImageViewTarget imageViewTarget, Object resource) &#123;</span><br><span class="line"></span><br><span class="line">        if (imageViewTarget == null || resource == null) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        ImageView imageView = (ImageView) imageViewTarget.getView();</span><br><span class="line">        if(imageView==null)&#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        //View大小 与 加载的 资源大小</span><br><span class="line">        int viewWidth = imageView.getWidth();</span><br><span class="line">        int viewHeight = imageView.getHeight();</span><br><span class="line">        int resWidth=0,resHeight=0;</span><br><span class="line"></span><br><span class="line">        if(resource instanceof Bitmap)&#123;</span><br><span class="line">            Bitmap bitmap = (Bitmap)resource;</span><br><span class="line">            resWidth = bitmap.getWidth();</span><br><span class="line">            resHeight = bitmap.getHeight();</span><br><span class="line">        &#125;else if(resource instanceof Drawable)&#123;</span><br><span class="line">            Drawable drawable= (Drawable  )resource;</span><br><span class="line">            resWidth = drawable.getIntrinsicWidth();</span><br><span class="line">            resHeight =drawable.getIntrinsicHeight();</span><br><span class="line">        &#125;</span><br><span class="line">        //</span><br><span class="line">        DetectorInfo detectorInfo = new DetectorInfo();</span><br><span class="line">        if(resHeight&gt;viewWidth&amp;&amp;resWidth&gt;viewWidth)&#123;</span><br><span class="line">            //加载资源超过视图大小。需要预警</span><br><span class="line">            detectorInfo.isTooLarge = true;</span><br><span class="line">            detectorInfo.mImgWidth = resWidth;</span><br><span class="line">            detectorInfo.mImgHeight = resHeight;</span><br><span class="line">            detectorInfo.mViewHeight = viewHeight;</span><br><span class="line">            detectorInfo.mViewWidth = viewWidth;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //获取加载的url</span><br><span class="line">        String url = getUrlFromRequest(imageViewTarget.getRequest());</span><br><span class="line">        detectorInfo.mUrl = url;</span><br><span class="line">        detectorInfo.isLegalUrl = isLegalUrl(url);</span><br><span class="line"></span><br><span class="line">        if(detectorInfo.isTooLarge||!detectorInfo.isLegalUrl)&#123;</span><br><span class="line">            //打开预警界面</span><br><span class="line">            AlertListActivity.laungh(imageView.getContext(),detectorInfo);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 获取请求的Url</span><br><span class="line">     * @param request</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static String getUrlFromRequest(Request request)&#123;</span><br><span class="line">        if (request != null &amp;&amp; request instanceof SingleRequest) &#123;</span><br><span class="line">            SingleRequest singleRequest = (SingleRequest) request;</span><br><span class="line">            //反射获取加载的url</span><br><span class="line">            Class requestClass = singleRequest.getClass();</span><br><span class="line">            try &#123;</span><br><span class="line">                Field modelFiled = requestClass.getDeclaredField(&quot;model&quot;);</span><br><span class="line">                modelFiled.setAccessible(true);</span><br><span class="line">                Object model = modelFiled.get(singleRequest);</span><br><span class="line">                String url = null;</span><br><span class="line">                if (model instanceof String) &#123;</span><br><span class="line">                    url = (String) model;</span><br><span class="line">                &#125; else if (model instanceof Uri) &#123;</span><br><span class="line">                    url = ((Uri)model).toString();</span><br><span class="line">                &#125;</span><br><span class="line">                return url;</span><br><span class="line"></span><br><span class="line">            &#125; catch (NoSuchFieldException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125; catch (IllegalAccessException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 是否是合法的Url</span><br><span class="line">     * @param url</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public static boolean isLegalUrl(String url)&#123;</span><br><span class="line">        if(TextUtils.isEmpty(url))&#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        Pattern pattern = Pattern.compile(Constant.URL_REGEX_CDN);</span><br><span class="line">        Matcher matcher = pattern.matcher(url);</span><br><span class="line">        if(matcher!=null&amp;&amp;matcher.find())&#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="主要ASM-代码"><a href="#主要ASM-代码" class="headerlink" title="主要ASM 代码"></a>主要ASM 代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class GlideClassVisitor extends ClassVisitor &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    GlideClassVisitor(ClassVisitor cv) &#123;</span><br><span class="line">        super(Opcodes.ASM5, cv)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) &#123;</span><br><span class="line">        MethodVisitor methodVisitor = cv.visitMethod(access, name, desc, signature, exceptions);</span><br><span class="line">        methodVisitor = new AdviceAdapter(Opcodes.ASM5, methodVisitor, access, name, desc) &#123;</span><br><span class="line"></span><br><span class="line">            private boolean isInject() &#123;</span><br><span class="line">            	//只Hook setResource方法</span><br><span class="line">                if (name.equals(&quot;setResource&quot;)) &#123;</span><br><span class="line">                    return true</span><br><span class="line">                &#125;</span><br><span class="line">                return false</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            protected void onMethodExit(int i) &#123;</span><br><span class="line">                if(isInject())&#123;</span><br><span class="line">                    //setResource 执行结束后调用 GlideHelper.detect</span><br><span class="line">                    mv.visitVarInsn(ALOAD, 0);</span><br><span class="line">                    mv.visitVarInsn(ALOAD, 1);</span><br><span class="line">                    mv.visitMethodInsn(INVOKESTATIC, &quot;com/moonshot/library/imagedetector/GlideHelper&quot;, &quot;detect&quot;, &quot;(Lcom/bumptech/glide/request/target/ImageViewTarget;Ljava/lang/Object;)V&quot;, false);</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return methodVisitor</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                <hr>
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/08/28/ASM-Bytecode/" data-toggle="tooltip" data-placement="top"
+                           title="字节码操作框架：ASM">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+
+                <!--加入新的评论系统-->
+                
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ASM实战：Hook图片加载框架-预警大图-非法URL"><span class="toc-text">ASM实战：Hook图片加载框架 预警大图 非法URL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#目标"><span class="toc-text">目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#面向切面编程：-ASM-字节码操作框架"><span class="toc-text">面向切面编程： ASM 字节码操作框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#需要Hook的核心类"><span class="toc-text">需要Hook的核心类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hook准备-：ImageViewTarget中嵌入的检测代码"><span class="toc-text">Hook准备 ：ImageViewTarget中嵌入的检测代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#主要ASM-代码"><span class="toc-text">主要ASM 代码</span></a></li></ol></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#Android"
+                           title="Android">Android</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "Moonshot";
+    var disqus_identifier = "http://moonshoter.github.io/2018/08/28/Image-Detector-Plugin/";
+    var disqus_url = "http://moonshoter.github.io/2018/08/28/Image-Detector-Plugin/";
+
+    (function () {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/2907730793">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/moonshoter">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Moonshot 2018
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://moonshoter.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-121349625-1';
+    var _gaDomain = 'moonshoter.github.io';
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    var _baId = '4696d51d68d21879cb5fddb2556a83cb';
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?" + _baId;
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="https://avatars2.githubusercontent.com/u/8099910?s=460&amp;v=4">
+</body>
+
+</html>

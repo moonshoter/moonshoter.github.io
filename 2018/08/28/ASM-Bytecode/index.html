@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Moonshot的日常与技术分享">
+    <meta name="keyword" content="">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="Moonshot" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        字节码操作框架：ASM｜Moonshot&#39;s Planet
+        
+    </title>
+
+    <link rel="canonical" href="http://moonshoter.github.io/2018/08/28/ASM-Bytecode/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    Moonshot
+                </span>
+                's Planet
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg?imageView2/1/w/1400/h/400/interlace/1/q/90')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>字节码操作框架：ASM</h1>
+                    
+                    <h2 class="subheading">想为你做件事 让你更快乐的事 好在你的心中 埋下我的名字</h2>
+                    
+                    <span class="meta">
+                         作者 Moonshot
+                        <span>
+                          日期 2018-08-28
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#Android"
+                           title="Android">Android</a>
+                        
+                        <a class="tag" href="/tags/#ASM"
+                           title="ASM">ASM</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            字节码操作框架：ASM
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h3 id="什么是ASM"><a href="#什么是ASM" class="headerlink" title="什么是ASM?"></a>什么是ASM?</h3><p>​    ASM 是一个 Java 字节码操控框架。它能被用来动态生成类或者增强既有类的功能。ASM 可以直接产生二进制 class 文件，也可以在类被加载入 Java 虚拟机之前动态改变类行为。Java class 被存储在严格格式定义的 .class 文件里，这些class文件拥有足够的元数据来解析类中的所有元素：类名称、方法、属性以及 Java 字节码（指令）。ASM 从类文件中读入信息后，能够改变类行为，分析类信息，甚至能够根据用户要求生成新类。</p>
+<p>​    简而言之就是解析class(字节码)文件，修改、生成的新的class(字节码).</p>
+<p>###class基本知识</p>
+<ul>
+<li><p>类型描述符：可以理解为类在class内部的名称。</p>
+<p>基本类型的描述符：Z表示boolean，C表示char，B表示byte，I表示int，F表示float，J表示long，D表示double。一个类的描述符就是这个类的内部名称，在前面加上一个L，在后面加上一个分号即可。例如，String的类型描述符就是Ljava/lang/String.最后，一个数组的类型描述符就是一个中括号[后面跟上数组元素的类型描述符。</p>
+<p><img src="./class.png" alt=""></p>
+</li>
+<li><p>方法描述符</p>
+<p>一个方法描述符就是一个包含参数类型的描述符，以及方法返回类型描述符的字符串。一个方法描述符以一个左括号开始，然后跟上每个参数的描述符，然后是一个右括号，最后就是返回值的类型描述符，如果一个方法的返回值是void，那么返回值的类型描述符就是V（一个方法描述符不包含这个方法的名称以及参数的名称）.</p>
+<p><img src="./method.png" alt="method"></p>
+</li>
+</ul>
+<h3 id="ASM核心类介绍"><a href="#ASM核心类介绍" class="headerlink" title="ASM核心类介绍"></a>ASM核心类介绍</h3><p>主要核心类：</p>
+<pre><code>* ClassReader  一个字节码读取和分析器，类似SAX事件流的一种读取机制，当发生一些时间时就会调用相关的visitor进行相应的处理
+* ClassVisitor
+* FieldVisitor
+* MethodVisitor
+* AnnotationVisitor
+* ClassWriter类：它实现了ClassVisitor接口，用于拼接字节码。
+</code></pre><p>来我们来写一个类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ClassWriter cw = new ClassWriter(0); </span><br><span class="line">//类定义</span><br><span class="line">cw.visit(V1_8, ACC_PUBLIC,  &quot;pkg/MyClassName&quot;, null, &quot;java/lang/Object&quot;,  new String[] &#123; &quot;pkg/MyInterface&quot; &#125;);  //版本、访问修饰符、包名加类民、泛型的信息、父类、接口</span><br><span class="line"></span><br><span class="line">//生成成员变量public int mNum=0;</span><br><span class="line">cw.visitField(ACC_PUBLIC, &quot;mNum&quot;, &quot;I&quot;,  null, new Integer(0)).visitEnd();</span><br><span class="line"></span><br><span class="line">//生成方法</span><br><span class="line">cw.visitMethod(ACC_PUBLIC, &quot;say_hello_world&quot;,  &quot;(Ljava/lang/String;)V&quot;, null, null).visitEnd(); </span><br><span class="line"></span><br><span class="line">cw.visitEnd();</span><br></pre></td></tr></table></figure>
+<p>接下我们来把方法实现一下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">//生成方法</span><br><span class="line">MethodVitor mv = cw.visitMethod(ACC_PUBLIC, &quot;say_hello_world&quot;,  &quot;(Ljava/lang/String;)I&quot;, null, null);</span><br><span class="line"></span><br><span class="line">//访问静态成员变量System.out</span><br><span class="line">mv.visitFieldInsn(GETSTATIC, &quot;java/lang/System&quot;, &quot;out&quot;, &quot;Ljava/io/PrintStream;&quot;);</span><br><span class="line"></span><br><span class="line">//塞入参数</span><br><span class="line">mv.visitLdcInsn(&quot;hello world&quot;);</span><br><span class="line"></span><br><span class="line">//执行println方法</span><br><span class="line">mv.visitMethodInsn(INVOKEVIRTUAL, &quot;java/io/PrintStream&quot;, &quot;println&quot;, &quot;(Ljava/lang/String;)V&quot;, false);</span><br><span class="line"></span><br><span class="line">//Return</span><br><span class="line">mv.visitInsn(Opcodes.RETURN);</span><br><span class="line">mv.visitEnd();</span><br></pre></td></tr></table></figure>
+<p>解析一个class文件的基本流程：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...获取class字节流或字节数组</span><br><span class="line">ClassReader cr = new ClassReader(bytes);</span><br><span class="line">ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);</span><br><span class="line">ClassVisitor cv = new XXXClassVisitor(cw);</span><br><span class="line">cr.accept(cv, EXPAND_FRAMES);</span><br><span class="line">//获取修改后的字节数据</span><br><span class="line">byte[] code = cw.toByteArray();</span><br><span class="line">...保存成的class文件</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ClassVisitor cv = new ClassVisitor(Opcodes.ASM4, cw) &#123;</span><br><span class="line">	//开始解析</span><br><span class="line">	void visit(int version, int access, String name, String signature,</span><br><span class="line">            String superName, String[] interfaces) &#123;&#125;</span><br><span class="line">            </span><br><span class="line">    //处理注解        </span><br><span class="line">    AnnotationVisitor visitAnnotation(String desc, boolean visible) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">    //成员变量</span><br><span class="line">    FieldVisitor visitField(int access, String name, String desc,</span><br><span class="line">            String signature, Object value) &#123;&#125;</span><br><span class="line">            </span><br><span class="line">    //处理方法</span><br><span class="line">    MethodVisitor visitMethod(int access, String name, String desc,</span><br><span class="line">            String signature, String[] exceptions) &#123;&#125;</span><br><span class="line">    //结束        </span><br><span class="line">    void visitEnd()&#123;&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">MethodVisitor mv = new MethodVisitor(api, mv) &#123;</span><br><span class="line">	//开始解析</span><br><span class="line">	void visitCode() &#123;&#125;</span><br><span class="line">	</span><br><span class="line">	//执行相关visit指令都会触发</span><br><span class="line">	void visitInsn(int opcode)&#123;&#125;</span><br><span class="line">	</span><br><span class="line">    //处理注解        </span><br><span class="line">    AnnotationVisitor visitAnnotation(String desc, boolean visible) &#123;&#125;</span><br><span class="line">    </span><br><span class="line">    //方法调用指令</span><br><span class="line">    void visitMethodInsn(int opcode, String owner, String name,</span><br><span class="line">            String desc, boolean itf) </span><br><span class="line">    //结束        </span><br><span class="line">    void visitEnd()&#123;&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="Android上的如何使用"><a href="#Android上的如何使用" class="headerlink" title="Android上的如何使用"></a>Android上的如何使用</h3><p><img src="./compile.png" alt="compile"></p>
+<ul>
+<li><p>gradle plugin 的Transform Api</p>
+<p>Transform允许第三方插件在class文件转为为dex文件前操作编译好的class文件，拿到正常的class后再经过ASM插入字节码后得到新的class，再被dx转成dex。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestAsmPlugin extends Transform implements Plugin &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    void transform(Context context, Collection inputs,</span><br><span class="line">                   Collection referencedInputs, TransformOutputProvider outputProvider,</span><br><span class="line">                   boolean isIncremental) &#123;</span><br><span class="line">        inputs.each &#123; TransformInput input -&gt;</span><br><span class="line">            input.directoryInputs.each &#123; DirectoryInput directoryInput -&gt;</span><br><span class="line">                //遍历class文件并进行asm处理</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">            input.jarInputs.each &#123; JarInput jarInput -&gt;</span><br><span class="line">            	//处理jar包内的数据</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>dex相关Task前插入操作字节码的任务</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">transformClassesWithDexForXXX.doFirst &#123;</span><br><span class="line">	  Collection&lt;File&gt; inputFile = contextProvider.getDexInputFile(new ContextProvider.Filter() &#123;</span><br><span class="line">                @Override</span><br><span class="line">                boolean accept(String path) &#123;</span><br><span class="line">                    return path.startsWith(intermediatesPath)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br><span class="line">      //读取遍历相关class文件</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>###应用场景</p>
+<ul>
+<li><p>无埋点统计、APM、插桩</p>
+<p>其实就是在上面的基础进行各种位置的插桩,具体例子<a href="http://www.jianshu.com/p/b5ffe845fe2d" target="_blank" rel="noopener">Android无埋点数据收集SDK关键技术</a></p>
+</li>
+<li><p>瘦包</p>
+<p>蘑菇街的<a href="http://www.jianshu.com/p/b5ffe845fe2d" target="_blank" rel="noopener">ThinRPlugin插件</a></p>
+<p>相关原理：android中的R文件，除了styleable类型外，所有字段都是int型变量/常量，且在运行期间都不会改变。所以可以在编译时，记录R中所有字段名称及对应值，然后利用asm工具遍历所有class，将引用R字段的地方替换成对应常量，然后将R$styleable.class以外的所有R.class删除掉</p>
+<p>BTW:类似瘦包的思路：Facebook redex(不是使用asm)</p>
+</li>
+</ul>
+
+                <hr>
+                
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/08/28/Image-Detector-Plugin/" data-toggle="tooltip" data-placement="top"
+                           title="ASM实战：Hook图片加载框架 预警大图 非法URL">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/08/17/How-I-Love-You-Log/" data-toggle="tooltip" data-placement="top"
+                           title="她好像不知道我有多喜欢她-情话合集">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+
+                <!--加入新的评论系统-->
+                
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是ASM"><span class="toc-text">什么是ASM?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ASM核心类介绍"><span class="toc-text">ASM核心类介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Android上的如何使用"><span class="toc-text">Android上的如何使用</span></a></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#Android"
+                           title="Android">Android</a>
+                        
+                        <a class="tag" href="/tags/#ASM"
+                           title="ASM">ASM</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "Moonshot";
+    var disqus_identifier = "http://moonshoter.github.io/2018/08/28/ASM-Bytecode/";
+    var disqus_url = "http://moonshoter.github.io/2018/08/28/ASM-Bytecode/";
+
+    (function () {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/2907730793">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/moonshoter">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Moonshot 2018
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://moonshoter.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-121349625-1';
+    var _gaDomain = 'moonshoter.github.io';
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    var _baId = '4696d51d68d21879cb5fddb2556a83cb';
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?" + _baId;
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="https://avatars2.githubusercontent.com/u/8099910?s=460&amp;v=4">
+</body>
+
+</html>
