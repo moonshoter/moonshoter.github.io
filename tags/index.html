@@ -156,11 +156,11 @@
             <!-- 标签云 -->
             <div id='tag_cloud' class="tags">
                 
-                <a href="#VPN" title="VPN" rel="1">VPN</a>
-                
                 <a href="#Android" title="Android" rel="4">Android</a>
                 
                 <a href="#ASM" title="ASM" rel="1">ASM</a>
+                
+                <a href="#VPN" title="VPN" rel="1">VPN</a>
                 
                 <a href="#Life" title="Life" rel="5">Life</a>
                 
@@ -171,27 +171,6 @@
             </div>
 
             <!-- 标签列表 -->
-            
-            <div class="one-tag-list">
-                <span class="fa fa-tag listing-seperator" id="VPN">
-                    <span class="tag-text">VPN</span>
-                </span>
-                
-                <div class="post-preview">
-                    <a href="/2018/07/04/Google-Cloud-VPN/">
-                        <h2 class="post-title">
-                            科学上网：Google Cloud 安装SSR与BBR加速
-                        </h2>
-                        
-                        <h3 class="post-subtitle">
-                            再远也要来到你身边
-                        </h3>
-                        
-                    </a>
-                </div>
-                <hr>
-                
-            </div>
             
             <div class="one-tag-list">
                 <span class="fa fa-tag listing-seperator" id="Android">
@@ -278,6 +257,27 @@
             </div>
             
             <div class="one-tag-list">
+                <span class="fa fa-tag listing-seperator" id="VPN">
+                    <span class="tag-text">VPN</span>
+                </span>
+                
+                <div class="post-preview">
+                    <a href="/2018/07/04/Google-Cloud-VPN/">
+                        <h2 class="post-title">
+                            科学上网：Google Cloud 安装SSR与BBR加速
+                        </h2>
+                        
+                        <h3 class="post-subtitle">
+                            再远也要来到你身边
+                        </h3>
+                        
+                    </a>
+                </div>
+                <hr>
+                
+            </div>
+            
+            <div class="one-tag-list">
                 <span class="fa fa-tag listing-seperator" id="Life">
                     <span class="tag-text">Life</span>
                 </span>
@@ -297,20 +297,6 @@
                 <hr>
                 
                 <div class="post-preview">
-                    <a href="/2018/09/02/Life-ToDo-List/">
-                        <h2 class="post-title">
-                            人生的 To-Do List
-                        </h2>
-                        
-                        <h3 class="post-subtitle">
-                            伴你同行 人间走一遭
-                        </h3>
-                        
-                    </a>
-                </div>
-                <hr>
-                
-                <div class="post-preview">
                     <a href="/2018/07/15/book-review-keep-promise/">
                         <h2 class="post-title">
                             假装书评：何为信守诺言
@@ -318,6 +304,20 @@
                         
                         <h3 class="post-subtitle">
                             小读《一头想要被吃掉的猪》
+                        </h3>
+                        
+                    </a>
+                </div>
+                <hr>
+                
+                <div class="post-preview">
+                    <a href="/2018/09/02/Life-ToDo-List/">
+                        <h2 class="post-title">
+                            人生的 To-Do List
+                        </h2>
+                        
+                        <h3 class="post-subtitle">
+                            伴你同行 人间走一遭
                         </h3>
                         
                     </a>
@@ -452,6 +452,34 @@
         </div>
     </div>
 </footer>
+
+<script>
+        function getMultiLine(f) {
+            var lines =f.toString(); 
+            return lines.substring(lines.indexOf("/*") + 3, lines.lastIndexOf("*/"));   
+        }
+        //字符画不能随意缩进，不然显示会错位
+        var console_text = function() {  
+/* 
+
+ ███▄ ▄███▓ ▒█████   ▒█████   ███▄    █   ██████  ██░ ██  ▒█████  ▄▄▄█████▓
+▓██▒▀█▀ ██▒▒██▒  ██▒▒██▒  ██▒ ██ ▀█   █ ▒██    ▒ ▓██░ ██▒▒██▒  ██▒▓  ██▒ ▓▒
+▓██    ▓██░▒██░  ██▒▒██░  ██▒▓██  ▀█ ██▒░ ▓██▄   ▒██▀▀██░▒██░  ██▒▒ ▓██░ ▒░
+▒██    ▒██ ▒██   ██░▒██   ██░▓██▒  ▐▌██▒  ▒   ██▒░▓█ ░██ ▒██   ██░░ ▓██▓ ░ 
+▒██▒   ░██▒░ ████▓▒░░ ████▓▒░▒██░   ▓██░▒██████▒▒░▓█▒░██▓░ ████▓▒░  ▒██▒ ░ 
+░ ▒░   ░  ░░ ▒░▒░▒░ ░ ▒░▒░▒░ ░ ▒░   ▒ ▒ ▒ ▒▓▒ ▒ ░ ▒ ░░▒░▒░ ▒░▒░▒░   ▒ ░░   
+░  ░      ░  ░ ▒ ▒░   ░ ▒ ▒░ ░ ░░   ░ ▒░░ ░▒  ░ ░ ▒ ░▒░ ░  ░ ▒ ▒░     ░    
+░      ░   ░ ░ ░ ▒  ░ ░ ░ ▒     ░   ░ ░ ░  ░  ░   ░  ░░ ░░ ░ ░ ▒    ░      
+       ░       ░ ░      ░ ░           ░       ░   ░  ░  ░    ░ ░           
+                                                                           
+
+
+      %c ♥ 我今天也喜欢你
+               获得陪玩券，快来找我玩吧 ^O^
+*/  
+        }
+        console.log(getMultiLine(console_text),'color:#FFCBD4;font-size:18px')
+</script>
 
 <!-- jQuery -->
 <script src="/js/jquery.min.js"></script>
