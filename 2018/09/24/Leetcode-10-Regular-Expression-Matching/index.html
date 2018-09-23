@@ -21,11 +21,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        Moonshot&#39;s Planet
+        Leetcode 题解10:正则表达式匹配｜Moonshot&#39;s Planet
         
     </title>
 
-    <link rel="canonical" href="http://moonshoter.github.io/archives/2018/page/2/">
+    <link rel="canonical" href="http://moonshoter.github.io/2018/09/24/Leetcode-10-Regular-Expression-Matching/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -47,7 +47,7 @@
 <!-- hack iOS CSS :active style -->
 <body ontouchstart="" class="animated fadeIn">
 <!-- Navigation -->
-<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "false" data-istags="false
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
 " data-ishome = "false" >
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -127,362 +127,165 @@
 </script>
 
 <!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg">
+
+
 <style>
-    .intro-header .site-heading {
-        margin: 50px;
-    }
     
     header.intro-header {
-        background-image: url('http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg')
+        background-image: url('http://7xqi8h.com1.z0.glb.clouddn.com/blog/picture/bg-default.jpg?imageView2/1/w/1400/h/400/interlace/1/q/90')
     }
+
     
 </style>
 
-<!-- Page Header -->
 <header class="intro-header">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
-                <div class="site-heading text-center">
-                    <h1>archives</h1>
-                    <span class="subheading">可以根据归档日期检索所有文件</span>
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>Leetcode 题解10:正则表达式匹配</h1>
+                    
+                    <h2 class="subheading">萧萧暗雨打窗声</h2>
+                    
+                    <span class="meta">
+                         作者 Moonshot
+                        <span>
+                          日期 2018-09-24
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#Leetcode"
+                           title="Leetcode">Leetcode</a>
+                        
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="post-title-haojen">
+        <span>
+            Leetcode 题解10:正则表达式匹配
+        </span>
+    </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <!-- archive list -->
-            
-				
-				
-				
-					
-					
-					<div class="archive archive-year" data-date="2018">
-						<h2 class="archive-title">
-						<span class="fa fa-archive">
-							<a href="/archives/2018">2018</a>
-						</span>
-						</h2>
-				
-				
-					
-					
-					<div class="archive archive-month" data-date="201809">
-						<h3 class="archive-title">
-							<a href="/archives/2018/09">09</a>
-						</h3>
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/09/24/Leetcode-10-Regular-Expression-Matching/">
-                        <h4 class="post-title">
-                            Leetcode 题解10:正则表达式匹配
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            萧萧暗雨打窗声
-                        </h4>
-                        
-                    </a>
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <p><a href="https://leetcode-cn.com/problems/regular-expression-matching/" target="_blank" rel="noopener">题目链接</a></p>
+<p>给定一个字符串 (<code>s</code>) 和一个字符模式 (<code>p</code>)。实现支持 <code>&#39;.&#39;</code> 和 <code>&#39;*&#39;</code> 的正则表达式匹配。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&apos;.&apos; 匹配任意单个字符。</span><br><span class="line">&apos;*&apos; 匹配零个或多个前面的元素。</span><br></pre></td></tr></table></figure>
+<p>匹配应该覆盖<strong>整个</strong>字符串 (<code>s</code>) ，而不是部分字符串。</p>
+<p><strong>说明:</strong></p>
+<ul>
+<li><code>s</code> 可能为空，且只包含从 <code>a-z</code> 的小写字母。</li>
+<li><code>p</code> 可能为空，且只包含从 <code>a-z</code> 的小写字母，以及字符 <code>.</code> 和 <code>*</code>。</li>
+</ul>
+<h4 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h4><p>难点在于 ‘*’ 字符可以匹配0-n个前面的元素</p>
+<p>下一个patten字符 </p>
+<p>不是*则需要保证当前的能匹配上。</p>
+<p>是* 则匹配0-n此后，讲patten移动到下两位的字符。</p>
+<p>（我都不知道自己在说什么，感觉还要再梳理下讲解思路）</p>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean isMatch(String s, String p) &#123;</span><br><span class="line">    if (s == null || p == null) &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return match(0, 0, s, p);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public boolean match(int pos1, int pos2, String s, String p) &#123;</span><br><span class="line">    if (pos2 &gt;= p.length()) &#123;</span><br><span class="line">        //patten使用完毕</span><br><span class="line">        return pos1 &gt;= s.length();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (pos2 + 1 &lt; p.length() &amp;&amp; p.charAt(pos2 + 1) == &apos;*&apos;) &#123;</span><br><span class="line">        //下一位是* 当前不一定需要匹配上</span><br><span class="line">        for (; pos1 &lt; s.length(); pos1++) &#123;</span><br><span class="line"></span><br><span class="line">            if (s.charAt(pos1) == p.charAt(pos2) || p.charAt(pos2) == &apos;.&apos;) &#123;</span><br><span class="line">                if (match(pos1, pos2 + 2, s, p)) &#123;</span><br><span class="line">                    return true;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                //当前位没匹配上</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //*号匹配零个字符</span><br><span class="line">        return match(pos1, pos2 + 2, s, p);</span><br><span class="line"></span><br><span class="line">    &#125; else if (pos1 &lt; s.length()) &#123;</span><br><span class="line">        //下一位非* 当前需要匹配上</span><br><span class="line">        if (p.charAt(pos2) == &apos;.&apos; || s.charAt(pos1) == p.charAt(pos2)) &#123;</span><br><span class="line">            //当前位置匹配上 匹配下一个位置</span><br><span class="line">            return match(pos1 + 1, pos2 + 1, s, p);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return false;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                <hr>
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/09/22/September-Diary/" data-toggle="tooltip" data-placement="top"
+                           title="九月是只身打马过草原">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
                 </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/09/22/September-Diary/">
-                        <h4 class="post-title">
-                            九月是只身打马过草原
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            记下九月份的思绪，九月份的思念
-                        </h4>
-                        
-                    </a>
+                <!-- disqus 评论框 end -->
+                
+
+
+                <!--加入新的评论系统-->
+                
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#思路"><span class="toc-text">思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#代码"><span class="toc-text">代码</span></a></li></ol>
                 </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/09/08/busy-life-and-miss-you-day-two/">
-                        <h4 class="post-title">
-                            碎碎念:越是忙碌的日子 越是要做喜欢的事-续
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            想给你带来一点阳光
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/09/08/busy-life-and-miss-you/">
-                        <h4 class="post-title">
-                            碎碎念:越是忙碌的日子 越是要做喜欢的事
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            才会更加珍惜和你的每一分每一秒
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/09/02/Life-ToDo-List/">
-                        <h4 class="post-title">
-                            人生的 To-Do List
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            想在世界留下爱你的痕迹
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-					
-					</div><!--month-->
-					
-					
-					<div class="archive archive-month" data-date="201808">
-						<h3 class="archive-title">
-							<a href="/archives/2018/08">08</a>
-						</h3>
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/08/28/Image-Detector-Plugin/">
-                        <h4 class="post-title">
-                            ASM实战：Hook图片加载框架 预警大图 非法URL
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            想找出你所有的烦恼与不开心
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/08/28/ASM-Bytecode/">
-                        <h4 class="post-title">
-                            字节码操作框架：ASM
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            想为你做件事 让你更快乐的事 好在你的心中 埋下我的名字
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/08/17/How-I-Love-You-Log/">
-                        <h4 class="post-title">
-                            她好像不知道我有多喜欢她-情话合集
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            每一张都是爱你的心情
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/08/07/maven-hide-souces/">
-                        <h4 class="post-title">
-                            Maven 开放库 隐藏源码：发布修改source.jar
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            偷偷藏住爱你的心
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-					
-					</div><!--month-->
-					
-					
-					<div class="archive archive-month" data-date="201807">
-						<h3 class="archive-title">
-							<a href="/archives/2018/07">07</a>
-						</h3>
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/07/27/first-cook-log/">
-                        <h4 class="post-title">
-                            虾生的意义：成为茄汁大虾
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            我想做饭给你吃 我想和你骑单车 我想和你看棒球
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/07/15/book-review-keep-promise/">
-                        <h4 class="post-title">
-                            假装书评：何为信守诺言
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            小读《一头想要被吃掉的猪》
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/07/10/colot-font-emoji-compat/">
-                        <h4 class="post-title">
-                            Emoji全平台适配方案：使用彩色/图片字体
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            Android iOS 一个都不能少
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/07/04/Google-Cloud-VPN/">
-                        <h4 class="post-title">
-                            科学上网：Google Cloud 安装SSR与BBR加速
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            再远也要来到你身边
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
-				
-				
-				
-				
-					
-					</div><!--month-->
-					
-					
-					<div class="archive archive-month" data-date="201806">
-						<h3 class="archive-title">
-							<a href="/archives/2018/06">06</a>
-						</h3>
-				
-				<div class="one-tag-list">
-                <div class="post-preview">
-                    <a href="/2018/06/21/new-blog-new-life/">
-                        <h4 class="post-title">
-                            Moonshot's Planet 启航之旅
-                        </h4>
-                        
-                        <h4 class="post-subtitle">
-                            从头开始 重新启航
-                        </h4>
-                        
-                    </a>
-                </div>
-				<hr>
-				</div>
-            
+            </div>
         </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#Leetcode"
+                           title="Leetcode">Leetcode</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
     </div>
+</article>
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "Moonshot";
+    var disqus_identifier = "http://moonshoter.github.io/2018/09/24/Leetcode-10-Regular-Expression-Matching/";
+    var disqus_url = "http://moonshoter.github.io/2018/09/24/Leetcode-10-Regular-Expression-Matching/";
+
+    (function () {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
 
 <!-- Footer -->
 <!-- Footer -->
