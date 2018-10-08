@@ -2,7 +2,7 @@
             var lines =f.toString(); 
             return lines.substring(lines.indexOf("/*") + 3, lines.lastIndexOf("*/"));   
         }
-        //字符画不能随意缩进，不然显示会错位
+      
         var console_text = function() {  
 /* 
 
