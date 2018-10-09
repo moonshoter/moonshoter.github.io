@@ -21,11 +21,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        Leetcode 题解10:正则表达式匹配｜Moonshot&#39;s Planet
+        看大佬造轮子：如何写一个Mess 混淆Activity、View｜Moonshot&#39;s Planet
         
     </title>
 
-    <link rel="canonical" href="https://moonshoter.github.io/2018/09/24/Leetcode-10-Regular-Expression-Matching/">
+    <link rel="canonical" href="https://moonshoter.github.io/2018/10/10/Understand-Mess-Proguard/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -149,18 +149,20 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>Leetcode 题解10:正则表达式匹配</h1>
+                    <h1>看大佬造轮子：如何写一个Mess 混淆Activity、View</h1>
+                    
+                    <h2 class="subheading">再怎么混淆，也要Keep住爱你的心</h2>
                     
                     <span class="meta">
                          作者 Moonshot
                         <span>
-                          日期 2018-09-24
+                          日期 2018-10-10
                          </span>
                     </span>
                     <div class="tags text-center">
                         
-                        <a class="tag" href="/tags/#Leetcode"
-                           title="Leetcode">Leetcode</a>
+                        <a class="tag" href="/tags/#Android"
+                           title="Android">Android</a>
                         
                     </div>
                 </div>
@@ -169,7 +171,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            Leetcode 题解10:正则表达式匹配
+            看大佬造轮子：如何写一个Mess 混淆Activity、View
         </span>
     </div>
 </header>
@@ -180,36 +182,32 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p><a href="https://leetcode-cn.com/problems/regular-expression-matching/" target="_blank" rel="noopener">题目链接</a></p>
-<p>给定一个字符串 (<code>s</code>) 和一个字符模式 (<code>p</code>)。实现支持 <code>&#39;.&#39;</code> 和 <code>&#39;*&#39;</code> 的正则表达式匹配。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&apos;.&apos; 匹配任意单个字符。</span><br><span class="line">&apos;*&apos; 匹配零个或多个前面的元素。</span><br></pre></td></tr></table></figure>
-<p>匹配应该覆盖<strong>整个</strong>字符串 (<code>s</code>) ，而不是部分字符串。</p>
-<p><strong>说明:</strong></p>
+                <p>暂未完成 写个目录</p>
+<h2 id="Mess"><a href="#Mess" class="headerlink" title="Mess"></a>Mess</h2><p><a href="https://github.com/eleme/Mess" target="_blank" rel="noopener">Mess</a>是一个解决Android自带ProGuard无法混淆Activity、Service的gradle插件</p>
+<h2 id="ProGuard-为什么混淆不了Activity、Service、自定义View"><a href="#ProGuard-为什么混淆不了Activity、Service、自定义View" class="headerlink" title="ProGuard 为什么混淆不了Activity、Service、自定义View"></a>ProGuard 为什么混淆不了Activity、Service、自定义View</h2><p>ProGuard是用来优化、缩减、混淆的java代码，并非为Android专门设计的。而安卓的四大组件的是再manifest下注册的，自定义View在xml文件中使用。因此如果代码混淆了，但是xml不变，会导致错误。故实际上默认是keep住了四大组件和view的子类。<br>然而大佬们是不会满足这种情况的。那么假设没看过Mess库该怎么做呢。</p>
+<p>核心目标是 混淆Activity等、相应xml替换成混淆后的数据</p>
 <ul>
-<li><code>s</code> 可能为空，且只包含从 <code>a-z</code> 的小写字母。</li>
-<li><code>p</code> 可能为空，且只包含从 <code>a-z</code> 的小写字母，以及字符 <code>.</code> 和 <code>*</code>。</li>
+<li>混淆Activity等<ul>
+<li>编译过程是如何keep住的，即使混淆文件没有配置</li>
 </ul>
-<h4 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h4><p>难点在于 ‘*’ 字符可以匹配0-n个前面的元素。</p>
-<p>我们先简化问题。不考虑 ‘*’ 字符的话。只需要按顺序匹配是否完全一致，或者p[i]==’.’即可。</p>
-<p>接着考虑’<em>‘  由于 </em> 号 匹配0-n个前面的元素。重点在于0个。</p>
-<p>所以我们需要根据 下一个patten字符  是不是 ‘*’ 来处理情况。</p>
-<p>不是*则需要保证 <code>p.charAt(pos2) == &#39;.&#39; || s.charAt(pos1) == p.charAt(pos2)</code>  负责匹配不成功。</p>
-<p>是* 则匹配 0- n 此后，进行pos的移动，继续往下匹配。</p>
-<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean isMatch(String s, String p) &#123;</span><br><span class="line">    if (s == null || p == null) &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return match(0, 0, s, p);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public boolean match(int pos1, int pos2, String s, String p) &#123;</span><br><span class="line">    if (pos2 &gt;= p.length()) &#123;</span><br><span class="line">        //patten使用完毕</span><br><span class="line">        return pos1 &gt;= s.length();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (pos2 + 1 &lt; p.length() &amp;&amp; p.charAt(pos2 + 1) == &apos;*&apos;) &#123;</span><br><span class="line">        //下一位是* 当前不一定需要匹配上</span><br><span class="line">        for (; pos1 &lt; s.length(); pos1++) &#123;</span><br><span class="line"></span><br><span class="line">            if (s.charAt(pos1) == p.charAt(pos2) || p.charAt(pos2) == &apos;.&apos;) &#123;</span><br><span class="line">                if (match(pos1, pos2 + 2, s, p)) &#123;</span><br><span class="line">                    return true;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                //当前位没匹配上</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //*号匹配零个字符</span><br><span class="line">        return match(pos1, pos2 + 2, s, p);</span><br><span class="line"></span><br><span class="line">    &#125; else if (pos1 &lt; s.length()) &#123;</span><br><span class="line">        //下一位非* 当前需要匹配上</span><br><span class="line">        if (p.charAt(pos2) == &apos;.&apos; || s.charAt(pos1) == p.charAt(pos2)) &#123;</span><br><span class="line">            //当前位置匹配上 匹配下一个位置</span><br><span class="line">            return match(pos1 + 1, pos2 + 1, s, p);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return false;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>修改替换xml的数据<ul>
+<li>需要知道混淆前后的对应关系 读取mapping.txt信息</li>
+<li>读取XML寻找需要相应的地方进行替换   并回写回去 进行打包</li>
+<li>在编译期需要合适的task进行hook 获取上述需要的信息、和替换原始数据等操作</li>
+</ul>
+</li>
+</ul>
+<h2 id="ProGuard-小科普"><a href="#ProGuard-小科普" class="headerlink" title="ProGuard 小科普"></a>ProGuard 小科普</h2><h2 id="打包的task…"><a href="#打包的task…" class="headerlink" title="打包的task…"></a>打包的task…</h2>
                 <hr>
                 
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2018/10/09/2018-October-Diary/" data-toggle="tooltip" data-placement="top"
-                           title="十月是越过山海，还是走向你">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2018/09/22/September-Diary/" data-toggle="tooltip" data-placement="top"
-                           title="九月是只身打马过草原">Next Post &rarr;</a>
+                        <a href="/2018/10/09/2018-October-Diary/" data-toggle="tooltip" data-placement="top"
+                           title="十月是越过山海，还是走向你">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -231,7 +229,7 @@
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#思路"><span class="toc-text">思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#代码"><span class="toc-text">代码</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Mess"><span class="toc-text">Mess</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ProGuard-为什么混淆不了Activity、Service、自定义View"><span class="toc-text">ProGuard 为什么混淆不了Activity、Service、自定义View</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ProGuard-小科普"><span class="toc-text">ProGuard 小科普</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#打包的task…"><span class="toc-text">打包的task…</span></a></li></ol>
                 </div>
             </div>
         </div>
@@ -253,8 +251,8 @@
                     </h5>
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Leetcode"
-                           title="Leetcode">Leetcode</a>
+                        <a class="tag" href="/tags/#Android"
+                           title="Android">Android</a>
                         
                     </div>
                 </section>
@@ -289,8 +287,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "Moonshot";
-    var disqus_identifier = "https://moonshoter.github.io/2018/09/24/Leetcode-10-Regular-Expression-Matching/";
-    var disqus_url = "https://moonshoter.github.io/2018/09/24/Leetcode-10-Regular-Expression-Matching/";
+    var disqus_identifier = "https://moonshoter.github.io/2018/10/10/Understand-Mess-Proguard/";
+    var disqus_url = "https://moonshoter.github.io/2018/10/10/Understand-Mess-Proguard/";
 
     (function () {
         var dsq = document.createElement('script');

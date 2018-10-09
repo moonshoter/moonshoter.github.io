@@ -21,11 +21,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        Leetcode 题解10:正则表达式匹配｜Moonshot&#39;s Planet
+        十月是越过山海，还是走向你｜Moonshot&#39;s Planet
         
     </title>
 
-    <link rel="canonical" href="https://moonshoter.github.io/2018/09/24/Leetcode-10-Regular-Expression-Matching/">
+    <link rel="canonical" href="https://moonshoter.github.io/2018/10/09/2018-October-Diary/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -149,18 +149,20 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>Leetcode 题解10:正则表达式匹配</h1>
+                    <h1>十月是越过山海，还是走向你</h1>
+                    
+                    <h2 class="subheading">此刻，我走向你， 这世上有多少人，而我走向你</h2>
                     
                     <span class="meta">
                          作者 Moonshot
                         <span>
-                          日期 2018-09-24
+                          日期 2018-10-09
                          </span>
                     </span>
                     <div class="tags text-center">
                         
-                        <a class="tag" href="/tags/#Leetcode"
-                           title="Leetcode">Leetcode</a>
+                        <a class="tag" href="/tags/#窃窃私语"
+                           title="窃窃私语">窃窃私语</a>
                         
                     </div>
                 </div>
@@ -169,7 +171,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            Leetcode 题解10:正则表达式匹配
+            十月是越过山海，还是走向你
         </span>
     </div>
 </header>
@@ -180,36 +182,21 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p><a href="https://leetcode-cn.com/problems/regular-expression-matching/" target="_blank" rel="noopener">题目链接</a></p>
-<p>给定一个字符串 (<code>s</code>) 和一个字符模式 (<code>p</code>)。实现支持 <code>&#39;.&#39;</code> 和 <code>&#39;*&#39;</code> 的正则表达式匹配。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&apos;.&apos; 匹配任意单个字符。</span><br><span class="line">&apos;*&apos; 匹配零个或多个前面的元素。</span><br></pre></td></tr></table></figure>
-<p>匹配应该覆盖<strong>整个</strong>字符串 (<code>s</code>) ，而不是部分字符串。</p>
-<p><strong>说明:</strong></p>
-<ul>
-<li><code>s</code> 可能为空，且只包含从 <code>a-z</code> 的小写字母。</li>
-<li><code>p</code> 可能为空，且只包含从 <code>a-z</code> 的小写字母，以及字符 <code>.</code> 和 <code>*</code>。</li>
-</ul>
-<h4 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h4><p>难点在于 ‘*’ 字符可以匹配0-n个前面的元素。</p>
-<p>我们先简化问题。不考虑 ‘*’ 字符的话。只需要按顺序匹配是否完全一致，或者p[i]==’.’即可。</p>
-<p>接着考虑’<em>‘  由于 </em> 号 匹配0-n个前面的元素。重点在于0个。</p>
-<p>所以我们需要根据 下一个patten字符  是不是 ‘*’ 来处理情况。</p>
-<p>不是*则需要保证 <code>p.charAt(pos2) == &#39;.&#39; || s.charAt(pos1) == p.charAt(pos2)</code>  负责匹配不成功。</p>
-<p>是* 则匹配 0- n 此后，进行pos的移动，继续往下匹配。</p>
-<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean isMatch(String s, String p) &#123;</span><br><span class="line">    if (s == null || p == null) &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return match(0, 0, s, p);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public boolean match(int pos1, int pos2, String s, String p) &#123;</span><br><span class="line">    if (pos2 &gt;= p.length()) &#123;</span><br><span class="line">        //patten使用完毕</span><br><span class="line">        return pos1 &gt;= s.length();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (pos2 + 1 &lt; p.length() &amp;&amp; p.charAt(pos2 + 1) == &apos;*&apos;) &#123;</span><br><span class="line">        //下一位是* 当前不一定需要匹配上</span><br><span class="line">        for (; pos1 &lt; s.length(); pos1++) &#123;</span><br><span class="line"></span><br><span class="line">            if (s.charAt(pos1) == p.charAt(pos2) || p.charAt(pos2) == &apos;.&apos;) &#123;</span><br><span class="line">                if (match(pos1, pos2 + 2, s, p)) &#123;</span><br><span class="line">                    return true;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                //当前位没匹配上</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //*号匹配零个字符</span><br><span class="line">        return match(pos1, pos2 + 2, s, p);</span><br><span class="line"></span><br><span class="line">    &#125; else if (pos1 &lt; s.length()) &#123;</span><br><span class="line">        //下一位非* 当前需要匹配上</span><br><span class="line">        if (p.charAt(pos2) == &apos;.&apos; || s.charAt(pos1) == p.charAt(pos2)) &#123;</span><br><span class="line">            //当前位置匹配上 匹配下一个位置</span><br><span class="line">            return match(pos1 + 1, pos2 + 1, s, p);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return false;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                <script src="/crypto-js.js"></script><script src="/mcommon.js"></script><h3 id="encrypt-message">私密日记</h3><link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css"> <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"> <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script> <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> <div id="security"> <div> <div class="input-group"> <input type="text" class="form-control" aria-label="Enter the password." id="pass"/> <div class="input-group-btn"> <button type="button" class="btn btn-default" onclick="decryptAES()">Decrypt</button> </div> </div> </div> </div> <div id="encrypt-blog" style="display:none"> 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 </div>
                 <hr>
                 
 
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/10/09/2018-October-Diary/" data-toggle="tooltip" data-placement="top"
-                           title="十月是越过山海，还是走向你">&larr; Previous Post</a>
+                        <a href="/2018/10/10/Understand-Mess-Proguard/" data-toggle="tooltip" data-placement="top"
+                           title="看大佬造轮子：如何写一个Mess 混淆Activity、View">&larr; Previous Post</a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/2018/09/22/September-Diary/" data-toggle="tooltip" data-placement="top"
-                           title="九月是只身打马过草原">Next Post &rarr;</a>
+                        <a href="/2018/09/24/Leetcode-10-Regular-Expression-Matching/" data-toggle="tooltip" data-placement="top"
+                           title="Leetcode 题解10:正则表达式匹配">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -231,7 +218,7 @@
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#思路"><span class="toc-text">思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#代码"><span class="toc-text">代码</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#encrypt-message"><span class="toc-text">私密日记</span></a></li></ol>
                 </div>
             </div>
         </div>
@@ -253,8 +240,8 @@
                     </h5>
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Leetcode"
-                           title="Leetcode">Leetcode</a>
+                        <a class="tag" href="/tags/#窃窃私语"
+                           title="窃窃私语">窃窃私语</a>
                         
                     </div>
                 </section>
@@ -289,8 +276,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "Moonshot";
-    var disqus_identifier = "https://moonshoter.github.io/2018/09/24/Leetcode-10-Regular-Expression-Matching/";
-    var disqus_url = "https://moonshoter.github.io/2018/09/24/Leetcode-10-Regular-Expression-Matching/";
+    var disqus_identifier = "https://moonshoter.github.io/2018/10/09/2018-October-Diary/";
+    var disqus_url = "https://moonshoter.github.io/2018/10/09/2018-October-Diary/";
 
     (function () {
         var dsq = document.createElement('script');
