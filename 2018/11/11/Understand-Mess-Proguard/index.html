@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Moonshot的日常与技术分享">
+    <meta name="keyword" content="android">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <meta name="google-site-verification" content="A1WqlC26qw9vO6lPDx7Xa1ohZJqj1Rw8WIe3bzM1yQI" />
+    <meta name="baidu-site-verification" content="t3RWJKzFEP" />
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="Moonshot" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        看大佬造轮子：如何写一个Mess 混淆Activity、View｜Moonshot&#39;s Planet
+        
+    </title>
+
+    <link rel="canonical" href="https://moonshoter.github.io/2018/11/11/Understand-Mess-Proguard/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('/img/blog-bg.jpg')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    Moonshot
+                </span>
+                's Planet
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="https://moonshoter.github.io/img/blog-bg.jpg">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('https://moonshoter.github.io/img/blog-bg.jpg?imageView2/1/w/1400/h/400/interlace/1/q/90')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>看大佬造轮子：如何写一个Mess 混淆Activity、View</h1>
+                    
+                    <h2 class="subheading">混淆一切，把爱你的心藏在最深处</h2>
+                    
+                    <span class="meta">
+                         作者 Moonshot
+                        <span>
+                          日期 2018-11-11
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#Android"
+                           title="Android">Android</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            看大佬造轮子：如何写一个Mess 混淆Activity、View
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h2 id="Mess"><a href="#Mess" class="headerlink" title="Mess"></a>Mess</h2><p><a href="https://github.com/eleme/Mess" target="_blank" rel="noopener">Mess</a>是一个解决Android自带ProGuard无法混淆Activity、Service的gradle插件</p>
+<h2 id="ProGuard-为什么混淆不了Activity、Service、自定义View"><a href="#ProGuard-为什么混淆不了Activity、Service、自定义View" class="headerlink" title="ProGuard 为什么混淆不了Activity、Service、自定义View"></a>ProGuard 为什么混淆不了Activity、Service、自定义View</h2><p>ProGuard是用来优化、缩减、混淆的java代码，并非为Android专门设计的。而安卓的四大组件的是再manifest下注册的，自定义View在xml文件中使用。因此如果代码混淆了，但是xml不变，会导致错误。故实际上默认是keep住了四大组件和view的子类。<br>然而大佬们是不会满足这种情况的。那么假设没看过Mess库该怎么做呢。</p>
+<p>核心目标是 混淆Activity等、相应xml替换成混淆后的数据</p>
+<ul>
+<li>混淆Activity、View等<ul>
+<li>编译过程是如何keep住的，即使混淆文件没有配置</li>
+</ul>
+</li>
+<li>修改替换xml的数据<ul>
+<li>需要知道混淆前后的对应关系 读取mapping.txt信息</li>
+<li>读取XML寻找需要相应的地方进行替换   并回写回去 进行打包</li>
+<li>在编译期需要合适的task进行hook 获取上述需要的信息、和替换原始数据等操作</li>
+</ul>
+</li>
+</ul>
+<h2 id="ProGuard-小科普"><a href="#ProGuard-小科普" class="headerlink" title="ProGuard 小科普"></a>ProGuard 小科普</h2><p>###使用ProGuard的意义</p>
+<blockquote>
+<p>压缩(Shrink)：检测并移除代码中无用的类、字段、方法和特性（Attribute）。<br>优化(Optimize)：对字节码进行优化，移除无用的指令。<br>混淆(Obfuscate)：使用a，b，c，d这样简短而无意义的名称，对类、字段和方法进行重命名。<br>预检(Preveirfy)：在Java平台上对处理后的代码进行预检，确保加载的class文件是可执行的。</p>
+</blockquote>
+<p>简而言之，优化代码，去除非必要代码即，及一定的程度的瘦包(去除多余代码，缩进命名a.b.c减少代码文件的大小)，然后混淆降低代码的可读性，提高反编译的难度和成本。</p>
+<p>###混淆的基本使用<br>一般Android项目中的配置是这样的。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">buildTypes &#123;</span><br><span class="line">    release &#123;</span><br><span class="line">        minifyEnabled true</span><br><span class="line">        proguardFiles getDefaultProguardFile(&apos;proguard-android.txt&apos;), &apos;proguard-rules.pro&apos;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>其中指定了两个混淆规则的文件<strong>proguard-android.txt</strong> 和<strong>proguard-rules.pro</strong></p>
+<p>其实proguard-rules.pro就是工程app目录下创建时自动生成的、一般也是项目的混淆规则会在该目录下配置。</p>
+<p>其中proguard-android.txt是安卓默认的混淆规则，一般再sdk的<strong>/tools/proguard/proguard-android.txt</strong> **路径下。</p>
+<p>然后一般混淆后会有几个文件在/build/proguard/输出。</p>
+<ul>
+<li>dump.txt 描述apk文件中所有类文件间的内部结构。</li>
+<li>mapping.txt 列出了原始的类，方法，和字段名与混淆后代码之间的映  射。</li>
+<li>seeds.txt 列出了未被混淆的类和成员 </li>
+<li>usage.txt 列出了从apk中删除的代码</li>
+</ul>
+<p>一般也用不到，主要是在处理线上奔溃信息时，用来定位到原始代码可能需要用到。</p>
+<p>###混淆规则和Keep语法<br>在实际开发中一般需要的就是对某些不能混淆的类，编写相应Keep语句。例如<br><code>-keep public class com.moonshot.loveu.bean.** 不混淆相应的bean类 因为一般会使用Gson等工具进行转化</code></p>
+<p>具体的混淆规则和Keep语法就不深入。可查看<a href="https://www.guardsquare.com/en/products/proguard/manual/usage#keepoptions" target="_blank" rel="noopener">proguard Keep选项</a> （不要问为什么要放英文网站，因为比较有逼格），也可自行查阅信息。</p>
+<p>###不可混淆的类</p>
+<p>混淆有这么多好处，那干脆就什么都混淆不就好了吗。如果可以当然是最好，但有些不可混淆，一混淆会代码代码上的错误。</p>
+<p>除了一开始说的四大组件、View不可混淆等，还有很多不可混淆，例如Native方法，枚举等等，实际上我们并没有编写这些得keep规则，但实际运行时没有问题的，一部分原因就是因为在proguard-android.txt中都写好了。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"># The support library contains references to newer platform versions.</span><br><span class="line"># Don&apos;t warn about those in case this app is linking against an older</span><br><span class="line"># platform version.  We know about them, and they are safe.</span><br><span class="line">-dontwarn android.support.**</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#保留R下面的资源</span><br><span class="line">-keep class **.R$* &#123;*;&#125;</span><br><span class="line"></span><br><span class="line">#保留本地native方法不被混淆</span><br><span class="line">-keepclasseswithmembernames class * &#123;</span><br><span class="line">    native &lt;methods&gt;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#保留在Activity中的方法参数是view的方法，</span><br><span class="line">#这样以来我们在layout中写的onClick就不会被影响</span><br><span class="line">-keepclassmembers class * extends android.app.Activity&#123;</span><br><span class="line">    public void *(android.view.View);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#保留枚举类不被混淆</span><br><span class="line">-keepclassmembers enum * &#123;</span><br><span class="line">    public static **[] values();</span><br><span class="line">    public static ** valueOf(java.lang.String);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#保留我们自定义控件（继承自View）不被混淆</span><br><span class="line">-keep public class * extends android.view.View&#123;</span><br><span class="line">    *** get*();</span><br><span class="line">    void set*(***);</span><br><span class="line">    public &lt;init&gt;(android.content.Context);</span><br><span class="line">    public &lt;init&gt;(android.content.Context, android.util.AttributeSet);</span><br><span class="line">    public &lt;init&gt;(android.content.Context, android.util.AttributeSet, int);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#保留Parcelable序列化类不被混淆</span><br><span class="line">-keep class * implements android.os.Parcelable &#123;</span><br><span class="line">  public static final android.os.Parcelable$Creator *;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#保留Serializable序列化的类不被混淆</span><br><span class="line">-keepclassmembers class * implements java.io.Serializable &#123;</span><br><span class="line">    static final long serialVersionUID;</span><br><span class="line">    private static final java.io.ObjectStreamField[] serialPersistentFields;</span><br><span class="line">    private void writeObject(java.io.ObjectOutputStream);</span><br><span class="line">    private void readObject(java.io.ObjectInputStream);</span><br><span class="line">    java.lang.Object writeReplace();</span><br><span class="line">    java.lang.Object readResolve();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其实这些跟实际开发也没有很大关系。一般实际开发中有些不能混淆的多是用到反射相关的类、方法、成员变量不可混淆。因为混淆后会反射找不到相应的类。</p>
+<h2 id="如何达到Mess的效果"><a href="#如何达到Mess的效果" class="headerlink" title="如何达到Mess的效果"></a>如何达到Mess的效果</h2><p>前文说道主要有两个步骤 1.混淆Activity、View 2. 修改替换xml的数据<br>其中在最新的proguard-android.txt中并没有看见Keep Activity和View的代码，只keep住了部分方法。</p>
+<p>所以我们需要去了解还有哪里读取设置了混淆文件的配置，或者混淆的配置最终再哪里设置。</p>
+<p>哪怎么办呢，假设Mess如果没有开源怎么办呢？</p>
+<p>那么只能再打包的源码源码搜索相关proguard相关的东西。</p>
+<p>例如搜索proguard-android.txt。可以找到一个常量：TaskManager.DEFAULT_PROGUARD_CONFIG_FILE.</p>
+<p>然后找到<strong>JackTransform </strong>使用了这个常亮</p>
+<p>com.android.build.gradle.internal.transforms.JackTransform （实际进行代码编译成dex的task）</p>
+<p>然后发现其中有实际混淆配置文件的读取。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if (config.isMinifyEnabled()) &#123;//如果开启混淆 上文gradle中 minifyEnabled 的配置</span><br><span class="line"></span><br><span class="line">    File sdkDir = scope.getGlobalScope().getSdkHandler().getAndCheckSdkFolder();</span><br><span class="line">    checkNotNull(sdkDir);</span><br><span class="line">    //默认的混淆配置和项目的混淆配置文件 即前文的proguard-android.txt 和 proguard-rules.pro</span><br><span class="line">    File defaultProguardFile = ProguardFiles.getDefaultProguardFile(</span><br><span class="line">            TaskManager.DEFAULT_PROGUARD_CONFIG_FILE, project);</span><br><span class="line"></span><br><span class="line">    Set&lt;File&gt; proguardFiles = config.getProguardFiles(true /*includeLibs*/,</span><br><span class="line">            ImmutableList.of(defaultProguardFile));</span><br><span class="line">    File proguardResFile = scope.getProcessAndroidResourcesProguardOutputFile();</span><br><span class="line">    proguardFiles.add(proguardResFile);</span><br><span class="line">    // for tested app, we only care about their aapt config since the base</span><br><span class="line">    // configs are the same files anyway.</span><br><span class="line">    </span><br><span class="line">    if (scope.getTestedVariantData() != null) &#123;</span><br><span class="line">    	//和资源相关的混淆信息文件</span><br><span class="line">        proguardResFile = scope.getTestedVariantData().getScope()</span><br><span class="line">                .getProcessAndroidResourcesProguardOutputFile();</span><br><span class="line">        proguardFiles.add(proguardResFile);</span><br><span class="line">    &#125;</span><br><span class="line">    options.setProguardFiles(proguardFiles);</span><br><span class="line">    options.setMappingFile(new File(scope.getProguardOutputFolder(), &quot;mapping.txt&quot;));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>发现其中<strong>getProcessAndroidResourcesProguardOutputFile()</strong>的数据是默认配置也非项目配置的数据。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">  @NonNull</span><br><span class="line">  public File getProcessAndroidResourcesProguardOutputFile() &#123;</span><br><span class="line">      return new File(globalScope.getIntermediatesDir(),</span><br><span class="line">              &quot;/proguard-rules/&quot; + getVariantConfiguration().getDirName() + &quot;/aapt_rules.txt&quot;);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>实际打包后，可以返现aapt_rules.txt中包含着和manifest、layout等资源文件中使用到的类的keep规则。</p>
+<p>那么现在目标变化为，如何在合适的task修改或删除aapt_rules.txt，来达到编译的时候混淆四大组件的目标。<br>通过getProcessAndroidResourcesProguardOutputFile的引用，可以发现另一个task ：<strong>ProcessAndroidResources</strong> 简而言之，该task会通过aapt命令进行资源文件的编译，生成asrc文件等操作。</p>
+<h3 id="Mess的流程"><a href="#Mess的流程" class="headerlink" title="Mess的流程"></a>Mess的流程</h3><p>加下来再我们让我们看看Mess实际是如何完成上面的每一个步骤</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">variant.outputs.each &#123; BaseVariantOutput output -&gt;</span><br><span class="line"></span><br><span class="line">	//Hook ProcessAndroidResources Task</span><br><span class="line">    String taskName = &quot;transformClassesAndResourcesWithProguardFor$&#123;variant.name.capitalize()&#125;&quot;</span><br><span class="line">    def proguardTask = project.tasks.findByName(taskName)</span><br><span class="line">    if (!proguardTask) &#123;</span><br><span class="line">        return</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    boolean hasProcessResourcesExecuted = false</span><br><span class="line">    output.processResources.doLast &#123;</span><br><span class="line">        if (hasProcessResourcesExecuted) &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">        hasProcessResourcesExecuted = true</span><br><span class="line">        //删除 aapt_rules.txt保证 activity、view被混淆 </span><br><span class="line">        def rulesPath = &quot;$&#123;project.buildDir.absolutePath&#125;/intermediates/proguard-rules/$&#123;variant.dirName&#125;/aapt_rules.txt&quot;</span><br><span class="line">        File aaptRules = new File(rulesPath)</span><br><span class="line">        aaptRules.delete()</span><br><span class="line">        aaptRules.createNewFile()</span><br><span class="line">        aaptRules &lt;&lt; &quot;&quot;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    proguardTask.doFirst &#123;</span><br><span class="line">    	//隐藏依赖库的混淆配置</span><br><span class="line">        println &quot;start ignore proguard components&quot;</span><br><span class="line">        ext.ignoreProguardComponents.each &#123; String component -&gt;</span><br><span class="line">            Util.hideProguardTxt(project, component)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    proguardTask.doLast &#123;</span><br><span class="line">    	// 读取maping.txt 、修改替换xml的数据</span><br><span class="line">    	// 详情看RewriteComponentTask的实现，主要是文件的读取修改逻辑</span><br><span class="line">        println &quot;proguard finish, ready to execute rewrite&quot;</span><br><span class="line">        RewriteComponentTask rewriteTask = project.tasks.create(name: &quot;rewriteComponentFor$&#123;variant.name.capitalize()&#125;&quot;,</span><br><span class="line">                type: RewriteComponentTask</span><br><span class="line">        ) &#123;</span><br><span class="line">            apkVariant = variant</span><br><span class="line">            variantOutput = output</span><br><span class="line">        &#125;</span><br><span class="line">        rewriteTask.execute()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    proguardTask.doLast &#123;</span><br><span class="line">    	//恢复依赖库混淆配置</span><br><span class="line">        ext.ignoreProguardComponents.each &#123; String component -&gt;</span><br><span class="line">            Util.recoverProguardTxt(project, component)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+                <hr>
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/11/05/tough-days/" data-toggle="tooltip" data-placement="top"
+                           title="坠欢莫舍 酒痕在衣">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+
+                <!--加入新的评论系统-->
+                
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Mess"><span class="toc-text">Mess</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ProGuard-为什么混淆不了Activity、Service、自定义View"><span class="toc-text">ProGuard 为什么混淆不了Activity、Service、自定义View</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ProGuard-小科普"><span class="toc-text">ProGuard 小科普</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何达到Mess的效果"><span class="toc-text">如何达到Mess的效果</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Mess的流程"><span class="toc-text">Mess的流程</span></a></li></ol></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#Android"
+                           title="Android">Android</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <div style="margin-top: 20px;">
+                    <h5 class="text-center">FRIENDS</h5>
+                    <ul class="list-inline text-center">
+                        
+                        <li><a href="https://csming1995.github.io/">csming</a></li>
+                        
+                        <li><a href="https://blog.piasy.com/">piasy</a></li>
+                        
+                        <li><a href="https://liuluu.github.io/">念久</a></li>
+                        
+                        <li><a href="https://yangqiuyan.github.io/">Mobius</a></li>
+                        
+                        <li><a href="https://kingsunday.github.io/">MrSunday</a></li>
+                        
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "Moonshot";
+    var disqus_identifier = "https://moonshoter.github.io/2018/11/11/Understand-Mess-Proguard/";
+    var disqus_url = "https://moonshoter.github.io/2018/11/11/Understand-Mess-Proguard/";
+
+    (function () {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/2907730793">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/moonshoter">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Moonshot 2018
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- easter egg -->
+<script src="/js/easter.egg.js"></script>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://moonshoter.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-121349625-1';
+    var _gaDomain = 'moonshoter.github.io';
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    var _baId = '4696d51d68d21879cb5fddb2556a83cb';
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?" + _baId;
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- swiftype -->
+<!-- 隐藏站内搜索 避免报错
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','','2.0.0');
+</script>
+
+-->
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="https://avatars2.githubusercontent.com/u/8099910?s=460&amp;v=4">
+</body>
+
+</html>
