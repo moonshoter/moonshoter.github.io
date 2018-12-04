@@ -21,11 +21,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        碎碎念:越是忙碌的日子 越是要做喜欢的事｜Moonshot&#39;s Planet
+        学习指南-写个目录-记个思路｜Moonshot&#39;s Planet
         
     </title>
 
-    <link rel="canonical" href="https://moonshoter.github.io/2018/09/08/busy-life-and-miss-you/">
+    <link rel="canonical" href="https://moonshoter.github.io/2018/12/05/learning-guide/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -36,9 +36,6 @@
     <!-- Pygments Github CSS -->
     <link rel="stylesheet" href="/css/syntax.css">
 
-<link rel="stylesheet" href="/assets/css/APlayer.min.css" class="aplayer-style-marker">
-<script src="/assets/js/APlayer.min.js" class="aplayer-script-marker"></script>
-<script src="/assets/js/Meting.min.js" class="meting-script-marker"></script>
 </head>
 
 <style>
@@ -135,13 +132,13 @@
 
 
 <img class="wechat-title-img"
-     src="/img/blog-bg.jpg">
+     src="https://moonshoter.github.io/img/blog-bg.jpg">
 
 
 <style>
     
     header.intro-header {
-        background-image: url('/img/blog-bg.jpg')
+        background-image: url('https://moonshoter.github.io/img/blog-bg.jpg?imageView2/1/w/1400/h/400/interlace/1/q/90')
     }
 
     
@@ -152,20 +149,20 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>碎碎念:越是忙碌的日子 越是要做喜欢的事</h1>
+                    <h1>学习指南-写个目录-记个思路</h1>
                     
-                    <h2 class="subheading">才会更加珍惜和你的每一分每一秒</h2>
+                    <h2 class="subheading">试着成为更好的人，才能保护重要的人</h2>
                     
                     <span class="meta">
                          作者 Moonshot
                         <span>
-                          日期 2018-09-08
+                          日期 2018-12-05
                          </span>
                     </span>
                     <div class="tags text-center">
                         
-                        <a class="tag" href="/tags/#Life"
-                           title="Life">Life</a>
+                        <a class="tag" href="/tags/#Android"
+                           title="Android">Android</a>
                         
                     </div>
                 </div>
@@ -174,7 +171,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            碎碎念:越是忙碌的日子 越是要做喜欢的事
+            学习指南-写个目录-记个思路
         </span>
     </div>
 </header>
@@ -185,35 +182,94 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                
-    <div id="aplayer-KdUzZEYm" class="aplayer aplayer-tag-marker meting-tag-marker" data-id="26348068" data-server="netease" data-type="song" data-mode="circulation" data-autoplay="false" data-mutex="true" data-listmaxheight="340px" data-preload="auto" data-theme="#FF4081"></div>
-<p>越来越多的小伙伴们离职了。</p>
-<p>日子也越来越忙碌了。</p>
-<p>其实很多事、情况也能理解。</p>
-<p>不过人们想要的是别人的理解，才不是理解别人。</p>
-<p>快乐才是人生的真谛。苦中作乐，乐在其中。</p>
-<p>再忙也是要做喜欢的事。</p>
-<p>偷偷买了喜欢的键盘、键帽。</p>
-<p>偷偷地博客藏下秘密。</p>
-<p>偷偷给博客做了一波SEO优化。</p>
-<blockquote>
-<p>当我徘徊在深夜<br>你在我心田</p>
-</blockquote>
+                <h2 id="代码质量、编码规范"><a href="#代码质量、编码规范" class="headerlink" title="代码质量、编码规范"></a>代码质量、编码规范</h2><ul>
+<li><p>自定义Lint检查</p>
+</li>
+<li><p>单元测试</p>
+</li>
+<li><p>Git-hooks - 流程控制、自动化操作</p>
+<ul>
+<li>Lint检测不通过</li>
+<li>单元测试覆盖率不够</li>
+<li>自动化提交翻译</li>
+<li>等等</li>
+</ul>
+</li>
+</ul>
+<h2 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h2><ul>
+<li><p>内存优化</p>
+<ul>
+<li>内存泄漏的检测和定位 (基础工具的使用)</li>
+<li>大内存对象如Bitmap的检测与预警</li>
+</ul>
+</li>
+<li><p>启动速度  常见想法：耗时延后、访问速度、空间换时间</p>
+<ul>
+<li>业务：初始化流程梳理、延后耗时操作</li>
+<li>修改dex类方法排序。将启动过程中优先使用的类排在前面，减少检索时间</li>
+<li>抑制启动过程GC,空间换时间</li>
+<li>重排apk内文件顺序？优化IO访问速度？</li>
+</ul>
+</li>
+<li><p>瘦包 基础思路：在线化、压缩、删除多余、合并重复数据</p>
+<p>  apk三巨头：resource.arsc 、class.dex 、res/assert)</p>
+<ul>
+<li>修改apk压缩方式？</li>
+<li>res、assert 资源压缩、在线化</li>
+<li>resource.arsc <ul>
+<li>修改编码方式？</li>
+<li>资源混淆（缩减资源命名、合并MD5一致的文件</li>
+</ul>
+</li>
+<li>dex文件<ul>
+<li>删除R文件，编译期hook 删除R文件，替换常量</li>
+<li>深入了解dex格式 删除非必要信息。例如删除dex文件中的调试信息块</li>
+<li>Redex中在字节码层面修改、优化、例如内联函数、去除单interface等 （有点比较不可控</li>
+</ul>
+</li>
+<li>META-INF 签名信息 没啥优化空间</li>
+</ul>
+</li>
+<li><p>电量、流畅度等</p>
+</li>
+<li>具体业务调优</li>
+</ul>
+<h2 id="性能检测"><a href="#性能检测" class="headerlink" title="性能检测"></a>性能检测</h2><p>自动化测试与数据量化、日志用于暴露问题、定位、衡量优化效果</p>
+<ul>
+<li><p>电量 <a href="https://github.com/google/battery-historian" target="_blank" rel="noopener">Battery Historian</a></p>
+</li>
+<li><p>启动时间的多种计算方案</p>
+</li>
+<li><p>页面跳转时间</p>
+</li>
+<li><p>帧率</p>
+</li>
+<li><p>内存</p>
+</li>
+</ul>
+<h2 id="移动端测试开发"><a href="#移动端测试开发" class="headerlink" title="移动端测试开发"></a>移动端测试开发</h2><p>大晚上看了几个相关岗位，突然有点小心动。</p>
+<ul>
+<li>UI自动化测试  Appium、Robotium、UiAutomator等</li>
+<li>单元测试 Junit等</li>
+<li>脚本语言 shell、Python</li>
+<li>性能测试（内存、CPU、帧率、电量）相应性能优化的基础</li>
+<li>自动化测试、基础信息版本对比预警</li>
+<li>专项测试经验<ul>
+<li>图像、滤镜效果</li>
+<li>相机、AR</li>
+</ul>
+</li>
+</ul>
 
                 <hr>
                 
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2018/09/08/busy-life-and-miss-you-day-two/" data-toggle="tooltip" data-placement="top"
-                           title="碎碎念:越是忙碌的日子 越是要做喜欢的事-续">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2018/09/02/Life-ToDo-List/" data-toggle="tooltip" data-placement="top"
-                           title="人生的 To-Do List">Next Post &rarr;</a>
+                        <a href="/2018/12/04/2018-12-life/" data-toggle="tooltip" data-placement="top"
+                           title="生不如意事十之八九，能与人说者无一二">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -235,7 +291,7 @@
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#代码质量、编码规范"><span class="toc-text">代码质量、编码规范</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#性能优化"><span class="toc-text">性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#性能检测"><span class="toc-text">性能检测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#移动端测试开发"><span class="toc-text">移动端测试开发</span></a></li></ol>
                 </div>
             </div>
         </div>
@@ -257,8 +313,8 @@
                     </h5>
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Life"
-                           title="Life">Life</a>
+                        <a class="tag" href="/tags/#Android"
+                           title="Android">Android</a>
                         
                     </div>
                 </section>
@@ -295,8 +351,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "Moonshot";
-    var disqus_identifier = "https://moonshoter.github.io/2018/09/08/busy-life-and-miss-you/";
-    var disqus_url = "https://moonshoter.github.io/2018/09/08/busy-life-and-miss-you/";
+    var disqus_identifier = "https://moonshoter.github.io/2018/12/05/learning-guide/";
+    var disqus_url = "https://moonshoter.github.io/2018/12/05/learning-guide/";
 
     (function () {
         var dsq = document.createElement('script');
