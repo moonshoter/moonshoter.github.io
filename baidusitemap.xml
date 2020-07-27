@@ -21,27 +21,6 @@
 
     
   <url>
-    <loc>https://moonshoter.github.io/2019/11/30/simple-aop/</loc>
-    <lastmod>2019-12-13T15:52:02.896Z</lastmod>
-    <data>
-        <display>
-        <title>AOP从未如此容易，拒绝手写ASM、Javassist</title>
-        <pubTime>2019-11-29T17:05:13.000Z</pubTime>
-        
-        <tag>Android</tag>
-         
-        <tag>ASM</tag>
-         
-        <tag>AOP</tag>
-         
-         
-           
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>https://moonshoter.github.io/2018/12/17/custom-lint-one/</loc>
     <lastmod>2018-12-16T18:56:43.515Z</lastmod>
     <data>
